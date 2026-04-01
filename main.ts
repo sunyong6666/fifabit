@@ -35,7 +35,6 @@ enum motorDirection {
     counterclockwise = 2   
 }
 
-const i2cAddress = 0x10;  // I2C设备地址
 
 //% color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 namespace FIFAbit {
