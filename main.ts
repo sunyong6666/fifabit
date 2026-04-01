@@ -33,7 +33,7 @@ enum motorDirection {
     counterclockwise = 2   
 }
 
-
+const i2cAddress = 0x10;  // I2C设备地址
 
 //% color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 namespace FIFAbit {
@@ -95,22 +95,24 @@ namespace FIFAbit {
 
     //###########单电机##############
     //% blockId=motorRunSpeed
-    //% block="motor %mID run %direction with speed %speed"
+    //% block="motor %mID go %direction at speed %speed"
     //% group="Motor" weight=9
     //% speed.min=0 speed.max=100 speed.defl=50
     export function motorRunSpeed(mID: motorID, direction: motorDirection, speed: number): void {
         // 设置速度
         const spAddr = mID + 0x04;
-        let spBuff = pins.createBuffer(2);
-        spBuff.setNumber(NumberFormat.UInt8BE, 0, (speed >> 8) & 0xFF); 
-        spBuff.setNumber(NumberFormat.UInt8BE, 1, speed & 0xFF); 
-        pins.i2cWriteBuffer(spAddr, spBuff);
+        let spBuff = pins.createBuffer(3);
+        spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
+        spBuff.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF); 
+        spBuff.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF); 
+        pins.i2cWriteBuffer(i2cAddress, spBuff);
 
         // 发送运动指令
         const cmdAddr = mID + 0x03;
-        let cmdBuff = pins.createBuffer(1);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, direction);
-        pins.i2cWriteBuffer(cmdAddr, cmdBuff);
+        let cmdBuff = pins.createBuffer(2);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
-
+    
 }
