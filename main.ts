@@ -9,7 +9,6 @@ enum motionType {
     //% block="右转"
     type4 = 4
 }
-
 // 运动类型()
 enum motionType1 {
     //% block="前进"
@@ -17,6 +16,8 @@ enum motionType1 {
     //% block="后退"
     type2 = 6
 }
+
+//% color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 namespace FIFAbit {
     //% blockId=motionSpeed
     //% block="%mtype with speed %mspeed"
@@ -32,13 +33,11 @@ namespace FIFAbit {
         spBuff.setNumber(NumberFormat.UInt8BE, 2, speedHigh);
         spBuff.setNumber(NumberFormat.UInt8BE, 3, speedLow);
         pins.i2cWriteBuffer(spAddr, spBuff);
-
         const regAddr = 0x8C + 0x00;//执行
         let cmdBuff = pins.createBuffer(1);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, mtype);
         pins.i2cWriteBuffer(regAddr, cmdBuff);
     }
-
     //% blockId=motionDistance
     //% block="%mtype with speed %mspeed and distance %distance cm"
     //% group="Motion" weight=2
@@ -54,7 +53,6 @@ namespace FIFAbit {
         spBuff.setNumber(NumberFormat.UInt8BE, 2, speedHigh);
         spBuff.setNumber(NumberFormat.UInt8BE, 3, speedLow);
         pins.i2cWriteBuffer(spAddr, spBuff);
-
         const disAddr = 0x8C + 0x05;//设置距离
         let disBuff = pins.createBuffer(2);
         const disHigh = (distance >> 8) & 0xFF;
@@ -62,13 +60,11 @@ namespace FIFAbit {
         disBuff.setNumber(NumberFormat.UInt8BE, 0, disHigh);
         disBuff.setNumber(NumberFormat.UInt8BE, 1, disLow);
         pins.i2cWriteBuffer(disAddr, disBuff);
-
         const regAddr = 0x8C + 0x00;//执行
         let cmdBuff = pins.createBuffer(1);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, mtype);
         pins.i2cWriteBuffer(regAddr, cmdBuff);
     }
-
     //% blockId=motionStop
     //% block="stop motion"
     //% group="Motion" weight=1
@@ -79,5 +75,4 @@ namespace FIFAbit {
         pins.i2cWriteBuffer(regAddr, cmdBuff);
     }
 
-    
 }
