@@ -17,12 +17,30 @@ enum motionType1 {
     type2 = 6
 }
 
+// 选择控制的电机
+enum motorID {
+    //% block="0"
+    motor0 = 0x50,
+    //% block="1"
+    motor1 = 0x6E
+}
+
+// 单电机运动方向
+enum motorDirection {
+    //% block="clockwise"
+    clockwise = 1,  
+    //% block="counterclockwise"
+    counterclockwise = 2   
+}
+
+
+
 //% color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 namespace FIFAbit {
     //% blockId=motionSpeed
     //% block="%mtype with speed %mspeed"
     //% group="Motion" weight=3
-    //% mspeed.min=0 mspeed.max=100 mspeed.defl=100
+    //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     export function motionSpeed(mtype: motionType, mspeed: number): void {
         const spAddr = 0x8C + 0x02;//设置速度
         let spBuff = pins.createBuffer(4);
@@ -41,7 +59,7 @@ namespace FIFAbit {
     //% blockId=motionDistance
     //% block="%mtype with speed %mspeed and distance %distance cm"
     //% group="Motion" weight=2
-    //% mspeed.min=0 mspeed.max=100 mspeed.defl=100
+    //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     //% distance.min=0 distance.max=1000 distance.defl=2
     export function motionDistance(mtype: motionType1, mspeed: number, distance: number): void {
         const spAddr = 0x8C + 0x02;//设置速度
@@ -73,6 +91,26 @@ namespace FIFAbit {
         let cmdBuff = pins.createBuffer(1);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, 0);
         pins.i2cWriteBuffer(regAddr, cmdBuff);
+    }
+
+    //###########单电机##############
+    //% blockId=motorRunSpeed
+    //% block="motor %mID run %direction with speed %speed"
+    //% group="Motor" weight=9
+    //% speed.min=0 speed.max=100 speed.defl=50
+    export function motorRunSpeed(mID: motorID, direction: motorDirection, speed: number): void {
+        // 设置速度
+        const spAddr = mID + 0x04;
+        let spBuff = pins.createBuffer(2);
+        spBuff.setNumber(NumberFormat.UInt8BE, 0, (speed >> 8) & 0xFF); 
+        spBuff.setNumber(NumberFormat.UInt8BE, 1, speed & 0xFF); 
+        pins.i2cWriteBuffer(spAddr, spBuff);
+
+        // 发送运动指令
+        const cmdAddr = mID + 0x03;
+        let cmdBuff = pins.createBuffer(1);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, direction);
+        pins.i2cWriteBuffer(cmdAddr, cmdBuff);
     }
 
 }
