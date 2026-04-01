@@ -84,11 +84,9 @@ namespace fifabit {
     //% block="stop motion"
     //% group="Motion" weight=1
     export function motionStop(): void {
-        
-
         const regAddr = 0x8C + 0x00;//执行
         let cmdBuff = pins.createBuffer(1);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, mtype);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, 0);
         pins.i2cWriteBuffer(regAddr, cmdBuff);
     }
 
