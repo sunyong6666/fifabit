@@ -37,10 +37,46 @@ enum motorDirection {
 
 // 颜色
 enum enRGB {
-    R = 1,
-    G = 2,
-    B = 3,
+    R = 0,
+    G = 1,
+    B = 2,
 }
+// 超声波
+enum Ultrasonic_pin {
+    //% block="(P13,P0)"
+    u1 = 13,
+    //% block="(P14,P1)"
+    u3 = 114,
+    //% block="(P9,P12)"
+    u4 = 129,
+    //% block="(P15,P2)"
+    u5 = 215
+}
+//单位
+enum PingUnit {
+    //% block="centimeters"
+    Centimeters,
+    //% block="microseconds"
+    MicroSeconds,
+    //% block="inches"
+    Inches
+}
+// io端口
+enum Write_pin {
+    //% block="P0"
+    w0 = 1,
+    //% block="P16"
+    w1 = 2,
+    //% block="P1"
+    w2 = 3,
+    //% block="P12"
+    w3 = 4,
+    //% block="P2"
+    w4 = 5,
+    //% block="P8"
+    w5 = 6
+}
+
 //color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 //% color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 namespace FIFAbit {
@@ -211,6 +247,8 @@ namespace FIFAbit {
             // 积分时间
             pins.i2cWriteBuffer(TCS3472_ADDR, pins.createBufferFromArray([0x81, 0x2B]));
             basic.pause(50); // 等积分
+
+            tcsInited = true;
         }   
     }
     function tcsRaw(): number[] {
@@ -228,20 +266,118 @@ namespace FIFAbit {
 
         return [c, r, g, b];
     }
-    
+    // 转标准 RGB（0~255）
+    function tcsRGB(): number[] {
+        let raw = tcsRaw();
+        let c = raw[0];
+
+        if (c == 0) return [0, 0, 0];
+
+        let r = raw[1] / c;
+        let g = raw[2] / c;
+        let b = raw[3] / c;
+
+        // 增益（关键）
+        let gain = 255;
+
+        r = r * gain;
+        g = g * gain;
+        b = b * gain;
+
+        // 限制范围
+        r = Math.min(255, Math.max(0, r));
+        g = Math.min(255, Math.max(0, g));
+        b = Math.min(255, Math.max(0, b));
+
+        return [
+            Math.round(r),
+            Math.round(g),
+            Math.round(b)
+        ];
+    }
     //% blockId=getRGB
     //% block="TCS get %color value"
     //% group="Sensor" weight=9
     export function getRGB(color: enRGB): number {
-        let rgb = tcsRaw();
+        let rgb = tcsRGB();
         return rgb[color];
     }
 
     //% blockId=getRGBC
     //% block="TCS get light intensity"
     //% group="Sensor" weight=8
-    export function getRGBC(): number {
-        let rgb = tcsRaw();
-        return rgb[0];
+    // export function getRGBC(): number {
+    //     let c = tcsRaw()[0];
+    //     let value = c / 256;
+    //     return Math.min(255, Math.round(value));
+    // }
+
+    //% blockId=getUltrasonic
+    //% block="Ultrasonic Sensor %ultpins units %unit"
+    //% ultpins.fieldOptions.width=220
+    //% ultpins.fieldOptions.columns=2
+    //% group="Sensor" weight=7
+    export function getUltrasonic(ultpins: Ultrasonic_pin, unit: PingUnit, maxCmDistance = 500): number {
+        let d
+        let distance
+        let echopin
+        let trigpin
+        if (ultpins == 13) {
+            trigpin = DigitalPin.P0;
+            echopin = DigitalPin.P13;
+        }else if (ultpins == 114) {
+            trigpin = DigitalPin.P1;
+            echopin = DigitalPin.P14;
+        }else if (ultpins == 129) {
+            trigpin = DigitalPin.P12;
+            echopin = DigitalPin.P9;
+        }else if (ultpins == 215) {
+            trigpin = DigitalPin.P2;
+            echopin = DigitalPin.P15;
+        }
+        
+        pins.setPull(trigpin, PinPullMode.PullNone);
+        pins.digitalWritePin(trigpin, 0);
+        control.waitMicros(2);
+        pins.digitalWritePin(trigpin, 1);
+        control.waitMicros(10);
+        pins.digitalWritePin(trigpin, 0);
+        // read pulse
+        d = pins.pulseIn(echopin, PulseValue.High, maxCmDistance * 50);
+        distance = d * 34 / 2 / 1000 * 3 / 2;
+        switch (unit) {
+            case PingUnit.Centimeters: return Math.round(distance);
+            case PingUnit.Inches: return Math.round(distance / 30.48);
+            default: return Math.round(d);
+        }
+    }
+
+
+
+    //% blockId=getLine
+    //% block="巡线传感器%linePin的值"
+    //% group="Sensor" weight=6
+    export function getLine(linePin: Write_pin): number {
+        let pin16
+        if (linePin == 1) {
+            pin16 = DigitalPin.P0;
+        }
+        if (linePin == 2) {
+            pin16 = DigitalPin.P16;
+        }
+        if (linePin == 3) {
+            pin16 = DigitalPin.P1;
+        }
+        if (linePin == 4) {
+            pin16 = DigitalPin.P12;
+        }
+        if (linePin == 5) {
+            pin16 = DigitalPin.P2;
+        }
+        if (linePin == 6) {
+            pin16 = DigitalPin.P8;
+        }
+
+        return pins.digitalReadPin(pin16);
     }
 }
