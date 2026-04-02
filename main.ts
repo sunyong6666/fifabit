@@ -35,9 +35,18 @@ enum motorDirection {
     counterclockwise = 2   
 }
 
+// 颜色
+enum enRGB {
+    R = 1,
+    G = 2,
+    B = 3,
+}
 //color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 //% color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 namespace FIFAbit {
+    //#########################################################################
+    //################################## 运动（双电机）#########################
+    //#########################################################################
     //% blockId=motionSpeed
     //% block="%mtype with speed %mspeed"
     //% group="Motion" weight=3
@@ -105,16 +114,12 @@ namespace FIFAbit {
         let cmdBuff = pins.createBuffer(1);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
-        
+        // 拼接 2 字节为 16 位整数
         let readBuff = pins.createBuffer(2);
         readBuff = pins.i2cReadBuffer(i2cAddress, 2);
-
-        // 3. 拼接 2 字节为 16 位整数
-        // 假设是高字节在前（大端序，与你的参考程序一致）
         let highByte = readBuff.getNumber(NumberFormat.UInt8BE, 0);
         let lowByte = readBuff.getNumber(NumberFormat.UInt8BE, 1);
         let speed = ((highByte & 0xFF) << 8) | (lowByte & 0xFF);
-
         return speed;
     }
     //% blockId=motorSetSpeed
@@ -191,5 +196,52 @@ namespace FIFAbit {
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 1, 0);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+    }
+    //#########################################################################
+    //##################################传感器#################################
+    //#########################################################################
+    let TCS3472_ADDR = 0x29;
+    let tcsInited = false;
+
+    //初始化tcs
+    export function tcsInit(): void {
+        if (!tcsInited) {
+            // 使能（PON + AEN）
+            pins.i2cWriteBuffer(TCS3472_ADDR, pins.createBufferFromArray([0x80, 0x03]));
+            // 积分时间
+            pins.i2cWriteBuffer(TCS3472_ADDR, pins.createBufferFromArray([0x81, 0x2B]));
+            basic.pause(50); // 等积分
+        }   
+    }
+    function tcsRaw(): number[] {
+        tcsInit();
+        // 发送读取命令
+        pins.i2cWriteNumber(TCS3472_ADDR, 0xB4, NumberFormat.UInt8BE);
+
+        // 读取8字节
+        let buf = pins.i2cReadBuffer(TCS3472_ADDR, 8);
+
+        let c = buf.getNumber(NumberFormat.UInt16LE, 0);
+        let r = buf.getNumber(NumberFormat.UInt16LE, 2);
+        let g = buf.getNumber(NumberFormat.UInt16LE, 4);
+        let b = buf.getNumber(NumberFormat.UInt16LE, 6);
+
+        return [c, r, g, b];
+    }
+    
+    //% blockId=getRGB
+    //% block="TCS get %color value"
+    //% group="Sensor" weight=9
+    export function getRGB(color: enRGB): number {
+        let rgb = tcsRaw();
+        return rgb[color];
+    }
+
+    //% blockId=getRGBC
+    //% block="TCS get light intensity"
+    //% group="Sensor" weight=8
+    export function getRGBC(): number {
+        let rgb = tcsRaw();
+        return rgb[0];
     }
 }
