@@ -29,13 +29,13 @@ enum motorID {
 
 // 单电机运动方向
 enum motorDirection {
-    //% block="clockwise"
+    //% block="正转"
     clockwise = 1,  
-    //% block="counterclockwise"
+    //% block="反转"
     counterclockwise = 2   
 }
 
-
+//color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 //% color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 namespace FIFAbit {
     //% blockId=motionSpeed
@@ -96,32 +96,32 @@ namespace FIFAbit {
     //#########################################################################
     //##################################单电机#################################
     //#########################################################################
-    //% blockId=motorRunSpeed
-    //% block="motor %mID go %direction with speed %speed"
+    //% blockId=motorGetSpeed
+    //% block="motor %mID get speed %speed"
     //% group="Motor" weight=9
-    //% speed.min=0 speed.max=100 speed.defl=50
-    export function motorRunSpeed(mID: motorID, direction: motorDirection, speed: number): void {
-        // 设置速度
-        const spAddr = mID + 0x04;
-        let spBuff = pins.createBuffer(3);
-        spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
-        spBuff.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF); 
-        spBuff.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF); 
-        pins.i2cWriteBuffer(i2cAddress, spBuff);
-        // 发送运动指令
-        const cmdAddr = mID + 0x03;
-        let cmdBuff = pins.createBuffer(2);
+    export function motorGetSpeed(mID: motorID): number {
+        // 发送指令
+        const cmdAddr = mID + 0x01;
+        let cmdBuff = pins.createBuffer(1);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
-    }
+        
+        let readBuff = pins.createBuffer(2);
+        readBuff = pins.i2cReadBuffer(i2cAddress, 2);
 
-    //% blockId=motorRunDistance
-    //% block="motor %mID move %distance cm %direction with speed %speed"
-    //% group="Motor" weight=9
+        // 3. 拼接 2 字节为 16 位整数
+        // 假设是高字节在前（大端序，与你的参考程序一致）
+        let highByte = readBuff.getNumber(NumberFormat.UInt8BE, 0);
+        let lowByte = readBuff.getNumber(NumberFormat.UInt8BE, 1);
+        let speed = ((highByte & 0xFF) << 8) | (lowByte & 0xFF);
+
+        return speed;
+    }
+    //% blockId=motorSetSpeed
+    //% block="motor %mID set speed %speed"
+    //% group="Motor" weight=8
     //% speed.min=0 speed.max=100 speed.defl=50
-    //% distance.min=0 distance.max=1000 distance.defl=10
-    export function motorRunDistance(mID: motorID, distance:number, direction: motorDirection, speed: number): void {
+    export function motorSetSpeed(mID: motorID, speed: number): void {
         // 设置速度
         const spAddr = mID + 0x04;
         let spBuff = pins.createBuffer(3);
@@ -129,6 +129,25 @@ namespace FIFAbit {
         spBuff.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF);
         spBuff.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF);
         pins.i2cWriteBuffer(i2cAddress, spBuff);
+    }
+    //% blockId=motorRun
+    //% block="motor %mID go %direction"
+    //% group="Motor" weight=7
+    export function motorRun(mID: motorID, direction: motorDirection): void {
+        // 发送运动指令
+        const cmdAddr = mID + 0x03;
+        let cmdBuff = pins.createBuffer(2);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+    }
+    //% blockId=motorRunDistance
+    //% block="motor %mID  %direction move %distance cm"
+    //% group="Motor" weight=6
+    //% speed.min=0 speed.max=100 speed.defl=50
+    //% distance.min=0 distance.max=1000 distance.defl=10
+    //% inlineInputMode = inline
+    export function motorRunDistance(mID: motorID, direction: motorDirection, distance: number): void {
         //设置距离
         const disAddr = mID + 0x07;
         let disBuff = pins.createBuffer(3);
@@ -140,8 +159,37 @@ namespace FIFAbit {
         const cmdAddr = mID + 0x03;
         let cmdBuff = pins.createBuffer(2);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction+4);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction+6);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
-    
+    //% blockId=motorRunSpeed
+    //% block="motor %mID go %direction with speed %speed"
+    //% group="Motor" weight=5
+    //% speed.min=0 speed.max=100 speed.defl=50
+    export function motorRunSpeed(mID: motorID, direction: motorDirection, speed: number): void {
+        // 设置速度
+        const spAddr = mID + 0x04;
+        let spBuff = pins.createBuffer(3);
+        spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
+        spBuff.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF);
+        spBuff.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF);
+        pins.i2cWriteBuffer(i2cAddress, spBuff);
+        // 发送运动指令
+        const cmdAddr = mID + 0x03;
+        let cmdBuff = pins.createBuffer(2);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+    }
+    //% blockId=motorStop
+    //% block="motor %mID stop"
+    //% group="Motor" weight=4
+    export function motorStop(mID: motorID): void {
+        // 发送运动指令
+        const cmdAddr = mID + 0x03;
+        let cmdBuff = pins.createBuffer(2);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, 0);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+    }
 }
