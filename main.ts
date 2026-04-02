@@ -88,7 +88,7 @@ namespace FIFAbit {
     //% group="Motion" weight=3
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     export function motionSpeed(mtype: motionType, mspeed: number): void {
-        const spAddr = 0x8C + 0x02;//设置速度
+        const spAddr = 0x8C + 0x01;//设置速度
         let spBuff = pins.createBuffer(5);
         spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
         spBuff.setNumber(NumberFormat.UInt8BE, 1, (mspeed >> 8) & 0xFF);
@@ -108,7 +108,7 @@ namespace FIFAbit {
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     //% distance.min=0 distance.max=1000 distance.defl=10
     export function motionDistance(mtype: motionType1, mspeed: number, distance: number): void {
-        const spAddr = 0x8C + 0x02;//设置速度
+        const spAddr = 0x8C + 0x01;//设置速度
         let spBuff = pins.createBuffer(5);
         spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
         spBuff.setNumber(NumberFormat.UInt8BE, 1, (mspeed >> 8) & 0xFF);
@@ -116,7 +116,7 @@ namespace FIFAbit {
         spBuff.setNumber(NumberFormat.UInt8BE, 3, (mspeed >> 8) & 0xFF);
         spBuff.setNumber(NumberFormat.UInt8BE, 4, mspeed & 0xFF);
         pins.i2cWriteBuffer(i2cAddress, spBuff);
-        const disAddr = 0x8C + 0x05;//设置距离
+        const disAddr = 0x8C + 0x02;//设置距离
         let disBuff = pins.createBuffer(3);
         disBuff.setNumber(NumberFormat.UInt8BE, 0, disAddr);
         disBuff.setNumber(NumberFormat.UInt8BE, 1, (distance >> 8) & 0xFF);
