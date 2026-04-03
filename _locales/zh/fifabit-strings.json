@@ -1,0 +1,34 @@
+
+{
+    "{id:group}Motion": "运动",
+    "{id:group}Motor": "电机",
+    "{id:group}Sensor": "传感器",
+
+    "motionType.type1|block": "前进",
+    "motionType.type2|block": "后退",
+    "motionType.type3|block": "左转",
+    "motionType.type4|block": "右转",
+    "motionType1.type1|block": "前进",
+    "motionType1.type2|block": "后退",
+    "motorDirection.clockwise|block": "正转",
+    "motorDirection.counterclockwise|block": "反转",
+    "PingUnit.Centimeters|block": "厘米",
+    "PingUnit.MicroSeconds|block": "微秒",
+    "PingUnit.Inches|block": "英寸",
+
+    "FIFAbit.motionSpeed|block": "%mtype 速度 %mspeed",
+    "FIFAbit.motionDistance|block": "%mtype 速度 %mspeed 距离 %distance 厘米",
+    "FIFAbit.motionStop|block": "停止运动",
+    "FIFAbit.motorGetSpeed|block": "获取电机 %mID 速度",
+    "FIFAbit.motorSetSpeed|block": "设置电机 %mID 速度为 %speed",
+    "FIFAbit.motorRun|block": "运行电机 %mID %direction",
+    "FIFAbit.motorRunDistance|block": "电机 %mID %direction 运行 %distance 厘米",
+    "FIFAbit.motorRunSpeed|block": "电机 %mID %direction 速度 %speed",
+    "FIFAbit.motorStop|block": "停止电机 %mID",
+
+    "FIFAbit.getRGB|block": "颜色传感器 %color",
+    "FIFAbit.getUltrasonic|block": "超声波传感器 %ultpins 距离（%unit）",
+    "FIFAbit.getLine|block": "巡线传感器 %linePin"
+
+    
+}

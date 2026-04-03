@@ -2,20 +2,21 @@ const i2cAddress = 0x10;  // I2C设备地址
 
 // 运动类型
 enum motionType {
-    //% block="前进"
+    //% block="forward"
     type1 = 1,
-    //% block="后退"
+    //% block="backward"
     type2 = 2,
-    //% block="左转"
+    //% block="left"
     type3 = 3,
-    //% block="右转"
+    //% block="right"
     type4 = 4
 }
+
 // 运动类型()
 enum motionType1 {
-    //% block="前进"
+    //% block="forward"
     type1 = 5,
-    //% block="后退"
+    //% block="backward"
     type2 = 6
 }
 
@@ -29,9 +30,9 @@ enum motorID {
 
 // 单电机运动方向
 enum motorDirection {
-    //% block="正转"
+    //% block="forward"
     clockwise = 1,  
-    //% block="反转"
+    //% block="Reverse"
     counterclockwise = 2   
 }
 
@@ -84,7 +85,7 @@ namespace FIFAbit {
     //################################## 运动（双电机）#########################
     //#########################################################################
     //% blockId=motionSpeed
-    //% block="%mtype with speed %mspeed"
+    //% block="%mtype at speed %mspeed"
     //% group="Motion" weight=3
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     export function motionSpeed(mtype: motionType, mspeed: number): void {
@@ -103,7 +104,7 @@ namespace FIFAbit {
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
     //% blockId=motionDistance
-    //% block="%mtype with speed %mspeed and distance %distance cm"
+    //% block="%mtype at speed %mspeed for distance %distance cm"
     //% group="Motion" weight=2
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     //% distance.min=0 distance.max=1000 distance.defl=10
@@ -142,7 +143,7 @@ namespace FIFAbit {
     //##################################单电机#################################
     //#########################################################################
     //% blockId=motorGetSpeed
-    //% block="motor %mID get speed %speed"
+    //% block="get speed of motor %mID"
     //% group="Motor" weight=9
     export function motorGetSpeed(mID: motorID): number {
         // 发送指令
@@ -159,7 +160,7 @@ namespace FIFAbit {
         return speed;
     }
     //% blockId=motorSetSpeed
-    //% block="motor %mID set speed %speed"
+    //% block="set motor %mID speed to %speed"
     //% group="Motor" weight=8
     //% speed.min=0 speed.max=100 speed.defl=50
     export function motorSetSpeed(mID: motorID, speed: number): void {
@@ -172,7 +173,7 @@ namespace FIFAbit {
         pins.i2cWriteBuffer(i2cAddress, spBuff);
     }
     //% blockId=motorRun
-    //% block="motor %mID go %direction"
+    //% block="run motor %mID %direction"
     //% group="Motor" weight=7
     export function motorRun(mID: motorID, direction: motorDirection): void {
         // 发送运动指令
@@ -183,7 +184,7 @@ namespace FIFAbit {
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
     //% blockId=motorRunDistance
-    //% block="motor %mID  %direction move %distance cm"
+    //% block="run motor %mID  %direction for %distance cm"
     //% group="Motor" weight=6
     //% speed.min=0 speed.max=100 speed.defl=50
     //% distance.min=0 distance.max=1000 distance.defl=10
@@ -204,7 +205,7 @@ namespace FIFAbit {
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
     //% blockId=motorRunSpeed
-    //% block="motor %mID go %direction with speed %speed"
+    //% block="run motor %mID  %direction at speed %speed"
     //% group="Motor" weight=5
     //% speed.min=0 speed.max=100 speed.defl=50
     export function motorRunSpeed(mID: motorID, direction: motorDirection, speed: number): void {
@@ -223,7 +224,7 @@ namespace FIFAbit {
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
     //% blockId=motorStop
-    //% block="motor %mID stop"
+    //% block="stop motor %mID"
     //% group="Motor" weight=4
     export function motorStop(mID: motorID): void {
         // 发送运动指令
@@ -296,7 +297,7 @@ namespace FIFAbit {
         ];
     }
     //% blockId=getRGB
-    //% block="TCS get %color value"
+    //% block="color sensor %color"
     //% group="Sensor" weight=9
     export function getRGB(color: enRGB): number {
         let rgb = tcsRGB();
@@ -313,7 +314,7 @@ namespace FIFAbit {
     // }
 
     //% blockId=getUltrasonic
-    //% block="Ultrasonic Sensor %ultpins units %unit"
+    //% block="ultrasonic sensor %ultpins distance (%unit)"
     //% ultpins.fieldOptions.width=220
     //% ultpins.fieldOptions.columns=2
     //% group="Sensor" weight=7
@@ -355,7 +356,7 @@ namespace FIFAbit {
 
 
     //% blockId=getLine
-    //% block="巡线传感器%linePin的值"
+    //% block="read line sensor %linePin"
     //% group="Sensor" weight=6
     export function getLine(linePin: Write_pin): number {
         let pin16

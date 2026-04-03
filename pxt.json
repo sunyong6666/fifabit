@@ -9,13 +9,14 @@
     "files": [
         "main.blocks",
         "main.ts",
+        "_locales/zh/fifabit-strings.json",
         "README.md"
     ],
     "testFiles": [
         "test.ts"
     ],
     "targetVersions": {
-        "target": "8.0.18",
+        "target": "8.0.21",
         "targetId": "microbit"
     },
     "supportedTargets": [
