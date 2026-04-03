@@ -185,7 +185,6 @@ namespace FIFAbit {
     //% blockId=motorRunDistance
     //% block="run motor %mID  %direction for %distance cm"
     //% group="Motor" weight=6
-    //% speed.min=0 speed.max=100 speed.defl=50
     //% distance.min=0 distance.max=1000 distance.defl=10
     //% inlineInputMode = inline
     export function motorRunDistance(mID: motorID, direction: motorDirection, distance: number): void {
@@ -203,9 +202,31 @@ namespace FIFAbit {
         cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction + 6);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
+
+    //% blockId=motorRunAngle
+    //% block="run motor %mID  %direction %angle degrees"
+    //% group="Motor" weight=5
+    //% angle.min=0 angle.max=3600 angle.defl=90
+    //% inlineInputMode = inline
+    export function motorRunAngle(mID: motorID, direction: motorDirection, angle: number): void {
+        //设置偏移角度
+        const disAddr = mID + 0x06;
+        let disBuff = pins.createBuffer(3);
+        disBuff.setNumber(NumberFormat.UInt8BE, 0, disAddr);
+        disBuff.setNumber(NumberFormat.UInt8BE, 1, (angle >> 8) & 0xFF);
+        disBuff.setNumber(NumberFormat.UInt8BE, 2, angle & 0xFF);
+        pins.i2cWriteBuffer(i2cAddress, disBuff);
+        // 发送运动指令
+        const cmdAddr = mID + 0x03;
+        let cmdBuff = pins.createBuffer(2);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction + 4);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+    }
+
     //% blockId=motorRunSpeed
     //% block="run motor %mID go %direction at speed %speed"
-    //% group="Motor" weight=5
+    //% group="Motor" weight=4
     //% speed.min=0 speed.max=100 speed.defl=50
     export function motorRunSpeed(mID: motorID, direction: motorDirection, speed: number): void {
         // 设置速度
@@ -224,9 +245,9 @@ namespace FIFAbit {
     }
     //% blockId=motorStop
     //% block="stop motor %mID"
-    //% group="Motor" weight=4
+    //% group="Motor" weight=3
     export function motorStop(mID: motorID): void {
-        // 发送运动指令
+        // 发送停止运动指令
         const cmdAddr = mID + 0x03;
         let cmdBuff = pins.createBuffer(2);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
