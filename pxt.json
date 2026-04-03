@@ -1,5 +1,5 @@
 {
-    "name": "fifa:bit",
+    "name": "fifabit",
     "description": "",
     "dependencies": {
         "core": "*",
