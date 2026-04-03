@@ -29,6 +29,5 @@
     "FIFAbit.getRGB|block": "颜色传感器 %color",
     "FIFAbit.getUltrasonic|block": "超声波传感器 %ultpins 距离（%unit）",
     "FIFAbit.getLine|block": "巡线传感器 %linePin"
-
-    
+ 
 }
