@@ -151,12 +151,18 @@ namespace FIFAbit {
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
         // 拼接 2 字节为 16 位整数
+        // let readBuff = pins.createBuffer(2);
+        // readBuff = pins.i2cReadBuffer(i2cAddress, 2);
+        // let highByte = readBuff.getNumber(NumberFormat.UInt8BE, 0);
+        // let lowByte = readBuff.getNumber(NumberFormat.UInt8BE, 1);
+        // let speed = ((highByte & 0xFF) << 8) | (lowByte & 0xFF);
+
+        // 读取2字节数据
         let readBuff = pins.createBuffer(2);
         readBuff = pins.i2cReadBuffer(i2cAddress, 2);
-        let highByte = readBuff.getNumber(NumberFormat.UInt8BE, 0);
-        let lowByte = readBuff.getNumber(NumberFormat.UInt8BE, 1);
-        let speed = ((highByte & 0xFF) << 8) | (lowByte & 0xFF);
-        return speed;
+        // 将2个字节作为有符号16位整数解析
+        let speed = readBuff.getNumber(NumberFormat.Int16BE, 0);
+        return speed; 
     }
     //% blockId=motorSetSpeed
     //% block="set motor %mID speed to %speed"
