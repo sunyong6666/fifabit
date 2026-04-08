@@ -76,6 +76,51 @@ enum Write_pin {
     //% block="P8"
     w5 = 6
 }
+//舵机端口
+enum ServoPin {
+    //% block="P0"
+    P0 = DigitalPin.P0,
+    //% block="P1"
+    P1 = DigitalPin.P1,
+    //% block="P2"
+    P2 = DigitalPin.P2,
+    //% block="P8"
+    P8 = DigitalPin.P8,
+    //% block="P12"
+    P12 = DigitalPin.P12,
+    //% block="P13"
+    P13 = DigitalPin.P13,
+    //% block="P15"
+    P15 = DigitalPin.P15
+}
+//转动方向
+enum RotationDirection {
+    //% block="clockwise"
+    Clockwise = 1,
+    //% block="counterclockwise"
+    Counterclockwise = -1
+}
+// 预定义颜色
+enum Colors {
+    //% block=红
+    Red = 0xFF0000,
+    //% block=橙
+    Orange = 0xFF7F00,
+    //% block=黄
+    Yellow = 0xFFFF00,
+    //% block=绿
+    Green = 0x00FF00,
+    //% block=青
+    Cyan = 0x00FFFF,
+    //% block=蓝
+    Blue = 0x0000FF,
+    //% block=紫
+    Purple = 0x7F00FF,
+    //% block=白
+    White = 0xFFFFFF,
+    //% block=黑
+    Off = 0x000000
+}
 
 //color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 //% color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
@@ -260,6 +305,181 @@ namespace FIFAbit {
         cmdBuff.setNumber(NumberFormat.UInt8BE, 1, 0);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
+
+    //#########################################################################
+    //##################################舵机#################################
+    //#########################################################################
+
+    //% blockId=servo1Set
+    //% block="设置180舵机 %pin 角度为 %value °"
+    //% value.min=0 value.max=180 value.defl=90
+    //% group="Servo Motor" weight=9
+    export function servo1Set(pin: ServoPin, value: number): void {
+        pins.servoWritePin(pin, value)
+    }
+    // //% blockId=servo1Increase
+    // //% block="180舵机 %servoPin 增加 %value °"
+    // //% value.min=0 value.max=180 value.defl=10
+    // //% group="Servo Motor" weight=8
+    // export function servo1Increase(servoPin: ServoPin, value: number): void {
+    //     let currentAngle = pins.servoReadPin(servoPin)
+    //     let newAngle = Math.min(180, Math.max(0, currentAngle + value))
+    //     pins.servoWritePin(servoPin, newAngle)
+    // }
+
+    // //% blockId=servo1Decrease
+    // //% block="180舵机 %servoPin 减少 %value °"
+    // //% value.min=0 value.max=180 value.defl=10
+    // //% group="Servo Motor" weight=7
+    // export function servo1Decrease(servoPin: ServoPin, value: number): void {
+    //     let currentAngle = pins.servoReadPin(servoPin)
+    //     let newAngle = Math.min(180, Math.max(0, currentAngle - value))
+    //     pins.servoWritePin(servoPin, newAngle)
+    // }
+
+    //% blockId=servo1Stop
+    //% block="停止180舵机 %servoPin 输出"
+    //% group="Servo Motor" weight=6
+    export function servo1Stop(servoPin: ServoPin): void {
+        pins.digitalWritePin(servoPin, 0)
+    }
+
+    //% blockId=servo360_run
+    //% block="360舵机 %pin 以速度 %speed %direction 转动"
+    //% speed.min=0 speed.max=100 speed.defl=50
+    //% group="Servo Motor" weight=5
+    export function runServo360(pin: ServoPin, speed: number, direction: RotationDirection ): void {
+        // 限制速度范围
+        speed = Math.min(100, Math.max(0, speed))
+
+        // 计算脉冲宽度
+        // 中间位置：1.5ms (1500µs) = 停止
+        // 顺时针方向：1.0ms (1000µs) = 全速逆时针
+        // 逆时针方向：2.0ms (2000µs) = 全速顺时针
+        let pulseWidth: number
+
+        if (speed === 0) {
+            pulseWidth = 1500
+        } else {
+            if (direction === RotationDirection.Clockwise) {
+                // 顺时针方向：脉冲宽度大于1500µs
+                // 1500-2000µs 对应速度 0-100
+                pulseWidth = 1500 + (speed * 5)
+            } else {
+                // 逆时针方向：脉冲宽度小于1500µs
+                // 1000-1500µs 对应速度 0-100
+                pulseWidth = 1500 - (speed * 5)
+            }
+        }
+        // 设置脉冲宽度
+        pins.servoSetPulse(pin, pulseWidth)
+    }
+    //% blockId=servo360_run_with_duration
+    //% block="360舵机 %pin 以速度 %speed %direction 转动 %duration 秒"
+    //% speed.min=0 speed.max=100 speed.defl=50
+    //% duration.min=0 duration.max=100 duration.defl=1
+    //% group="Servo Motor" weight=4
+    export function runServo360ForDuration(pin: ServoPin, speed: number, direction: RotationDirection, duration: number): void {
+        // 启动舵机
+        runServo360(pin, speed, direction)
+
+        // 等待指定时间
+        basic.pause(duration * 1000)
+
+        // 停止舵机
+        stopServo360(pin)
+    }
+
+    //% blockId=servo360_stop
+    //% block="停止360舵机 %pin"
+    //% group=""Servo Motor" weight=3
+    export function stopServo360(pin: ServoPin): void {
+        // 设置脉冲宽度为1.5ms停止
+        pins.servoSetPulse(pin, 1500)
+    }
+    
+    //#########################################################################
+    //##################################灯条#################################
+    //#########################################################################
+    // 全局灯条变量
+    let currentStrip: neopixel.Strip
+    let currentLEDCount: number = 8
+
+    //% blockId=rgb_strip_init
+    //% block="初始化灯条 引脚 %pin 灯数 %ledCount"
+    //% ledCount.min=1 ledCount.max=50 ledCount.defl=8
+    //% group="LED" weight=9
+    export function initStrip(pin: ServoPin, ledCount: number): void {
+        // 创建灯条
+        currentStrip = neopixel.create(pin as number, ledCount, NeoPixelMode.RGB)
+        currentLEDCount = ledCount
+        // 默认亮度
+        currentStrip.setBrightness(255)
+    }
+
+    //% blockId=rgb_strip_set_all
+    //% block="设置全部灯为颜色 %color"
+    //% group="LED" weight=8
+    export function setAllColor(color: Colors): void {
+        if (currentStrip) {
+            currentStrip.showColor(color)
+            currentStrip.show()
+        }
+    }
+
+    //% blockId=rgb_strip_set_all_rgb
+    //% block="设置全部灯RGB R %red G %green B %blue"
+    //% red.min=0 red.max=255 red.defl=255
+    //% green.min=0 green.max=255 green.defl=255
+    //% blue.min=0 blue.max=255 blue.defl=255
+    //% group="LED" weight=7
+    export function setAllRGB(red: number, green: number, blue: number): void {
+        if (currentStrip) {
+            for (let i = 0; i < currentLEDCount; i++) {
+                currentStrip.setPixelColor(i, neopixel.rgb(red, green, blue))
+            }
+            currentStrip.show()
+        }
+    }
+
+    //% blockId=rgb_strip_set_led
+    //% block="设置第 %index 个灯为颜色 %color"
+    //% index.min=0 index.defl=0
+    //% group="LED" weight=6
+    export function setLEDColor(index: number, color: Colors): void {
+        if (currentStrip && index >= 0 && index < currentLEDCount) {
+            currentStrip.setPixelColor(index, color)
+            currentStrip.show()
+        }
+    }
+
+    //% blockId=rgb_strip_set_led_rgb
+    //% block="设置第 %index 个灯RGB R %red G %green B %blue"
+    //% index.min=0 index.defl=0
+    //% red.min=0 red.max=255 red.defl=255
+    //% green.min=0 green.max=255 green.defl=255
+    //% blue.min=0 blue.max=255 blue.defl=255
+    //% group="LED" weight=5
+    export function setLEDRGB(index: number, red: number, green: number, blue: number): void {
+        if (currentStrip && index >= 0 && index < currentLEDCount) {
+            currentStrip.setPixelColor(index, neopixel.rgb(red, green, blue))
+            currentStrip.show()
+        }
+    }
+
+    //% blockId=rgb_strip_clear
+    //% block="熄灭全部灯"
+    //% group="LED" weight=4
+    export function clearAll(): void {
+        if (currentStrip) {
+            currentStrip.clear()
+            currentStrip.show()
+        }
+    }
+
+    
+
+
     //#########################################################################
     //##################################传感器#################################
     //#########################################################################
