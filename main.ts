@@ -597,6 +597,110 @@ namespace FIFAbit {
     }
 
     //#########################################################################
+    //##################################LCD#################################
+    //#########################################################################
+    const LCD_ADDRESS = 0x27  // 常见I2C地址，也可能是0x3F
+    let lcd_isInitialized = false
+
+    //% blockId="lcd1602_init" block="初始化LCD1602"
+    //% group="LCD1602" weight=100
+    export function init(): void {
+        // 简化的初始化序列
+        basic.pause(50)
+        writeCmd(0x33)
+        basic.pause(5)
+        writeCmd(0x32)
+        basic.pause(5)
+        writeCmd(0x28)  // 4位模式，2行显示
+        basic.pause(5)
+        writeCmd(0x0C)  // 显示开，光标关
+        basic.pause(5)
+        writeCmd(0x06)  // 输入模式
+        basic.pause(5)
+        writeCmd(0x01)  // 清屏
+        basic.pause(5)
+
+        lcd_isInitialized = true
+    }
+    //% blockId="lcd1602_clear" block="LCD清屏"
+    //% group="LCD1602" weight=90
+    export function clear(): void {
+        if (!lcd_isInitialized) init()
+        writeCmd(0x01)
+        basic.pause(2)
+    }
+
+    //% blockId="lcd1602_show_at" block="在第%row行第%col列显示%text"
+    //% row.min=0 row.max=1 row.defl=0
+    //% col.min=0 col.max=15 col.defl=0
+    //% group="LCD1602" weight=80
+    export function showAt(row: number, col: number, text: string): void {
+        if (!lcd_isInitialized) init()
+
+        // 限制行列
+        row = Math.min(1, Math.max(0, row))
+        col = Math.min(15, Math.max(0, col))
+
+        // 设置光标位置
+        let address = col
+        if (row == 1) address += 0x40
+        writeCmd(0x80 | address)
+
+        // 显示文本
+        for (let i = 0; i < text.length && i < 16; i++) {
+            writeData(text.charCodeAt(i))
+        }
+    }
+
+    //% blockId="lcd1602_show_line" block="在第%row行显示%text"
+    //% row.min=0 row.max=1 row.defl=0
+    //% group="LCD1602" weight=70
+    export function showLine(row: number, text: string): void {
+        if (!lcd_isInitialized) init()
+        showAt(row, 0, text)
+    }
+
+    //% blockId="lcd1602_show_number" block="LCD显示数字%num"
+    //% group="LCD1602" weight=60
+    export function showNumber(num: number): void {
+        if (!lcd_isInitialized) init()
+        showLine(0, num.toString())
+    }
+
+    // 内部辅助函数
+    function writeCmd(cmd: number): void {
+        let high = cmd & 0xF0
+        let low = (cmd << 4) & 0xF0
+
+        write4bits(high)
+        write4bits(low)
+    }
+
+    function writeData(data: number): void {
+        let high = data & 0xF0
+        let low = (data << 4) & 0xF0
+
+        write4bits(high | 0x01)  // RS=1
+        write4bits(low | 0x01)   // RS=1
+    }
+
+    function write4bits(data: number): void {
+        // 发送4位数据，带背光
+        let buffer = pins.createBuffer(1)
+        buffer[0] = data | 0x08  // 背光开
+        pins.i2cWriteBuffer(LCD_ADDRESS, buffer)
+
+        // 使能脉冲
+        buffer[0] = data | 0x0C
+        pins.i2cWriteBuffer(LCD_ADDRESS, buffer)
+        basic.pause(1)
+
+        buffer[0] = data & ~0x04
+        pins.i2cWriteBuffer(LCD_ADDRESS, buffer)
+        basic.pause(1)
+    }
+
+    //#########################################################################
     //##################################传感器#################################
     //#########################################################################
 
@@ -994,72 +1098,72 @@ namespace FIFAbit {
 
 
 
-    //% blockId=getUltrasonic
-    //% block="ultrasonic sensor %ultpins distance (%unit)"
-    //% ultpins.fieldOptions.width=220
-    //% ultpins.fieldOptions.columns=2
-    //% group="Sensor" weight=7
-    export function getUltrasonic(ultpins: Ultrasonic_pin, unit: PingUnit, maxCmDistance = 500): number {
-        let d
-        let distance
-        let echopin
-        let trigpin
-        if (ultpins == 13) {
-            trigpin = DigitalPin.P0;
-            echopin = DigitalPin.P13;
-        } else if (ultpins == 114) {
-            trigpin = DigitalPin.P1;
-            echopin = DigitalPin.P14;
-        } else if (ultpins == 129) {
-            trigpin = DigitalPin.P12;
-            echopin = DigitalPin.P9;
-        } else if (ultpins == 215) {
-            trigpin = DigitalPin.P2;
-            echopin = DigitalPin.P15;
-        }
+    // //% blockId=getUltrasonic
+    // //% block="ultrasonic sensor %ultpins distance (%unit)"
+    // //% ultpins.fieldOptions.width=220
+    // //% ultpins.fieldOptions.columns=2
+    // //% group="Sensor" weight=7
+    // export function getUltrasonic(ultpins: Ultrasonic_pin, unit: PingUnit, maxCmDistance = 500): number {
+    //     let d
+    //     let distance
+    //     let echopin
+    //     let trigpin
+    //     if (ultpins == 13) {
+    //         trigpin = DigitalPin.P0;
+    //         echopin = DigitalPin.P13;
+    //     } else if (ultpins == 114) {
+    //         trigpin = DigitalPin.P1;
+    //         echopin = DigitalPin.P14;
+    //     } else if (ultpins == 129) {
+    //         trigpin = DigitalPin.P12;
+    //         echopin = DigitalPin.P9;
+    //     } else if (ultpins == 215) {
+    //         trigpin = DigitalPin.P2;
+    //         echopin = DigitalPin.P15;
+    //     }
 
-        pins.setPull(trigpin, PinPullMode.PullNone);
-        pins.digitalWritePin(trigpin, 0);
-        control.waitMicros(2);
-        pins.digitalWritePin(trigpin, 1);
-        control.waitMicros(10);
-        pins.digitalWritePin(trigpin, 0);
-        // read pulse
-        d = pins.pulseIn(echopin, PulseValue.High, maxCmDistance * 50);
-        distance = d * 34 / 2 / 1000 * 3 / 2;
-        switch (unit) {
-            case PingUnit.Centimeters: return Math.round(distance);
-            case PingUnit.Inches: return Math.round(distance / 30.48);
-            default: return Math.round(d);
-        }
-    }
+    //     pins.setPull(trigpin, PinPullMode.PullNone);
+    //     pins.digitalWritePin(trigpin, 0);
+    //     control.waitMicros(2);
+    //     pins.digitalWritePin(trigpin, 1);
+    //     control.waitMicros(10);
+    //     pins.digitalWritePin(trigpin, 0);
+    //     // read pulse
+    //     d = pins.pulseIn(echopin, PulseValue.High, maxCmDistance * 50);
+    //     distance = d * 34 / 2 / 1000 * 3 / 2;
+    //     switch (unit) {
+    //         case PingUnit.Centimeters: return Math.round(distance);
+    //         case PingUnit.Inches: return Math.round(distance / 30.48);
+    //         default: return Math.round(d);
+    //     }
+    // }
 
 
 
-    //% blockId=getLine
-    //% block="read line sensor %linePin"
-    //% group="Sensor" weight=6
-    export function getLine(linePin: Write_pin): number {
-        let pin16
-        if (linePin == 1) {
-            pin16 = DigitalPin.P0;
-        }
-        if (linePin == 2) {
-            pin16 = DigitalPin.P16;
-        }
-        if (linePin == 3) {
-            pin16 = DigitalPin.P1;
-        }
-        if (linePin == 4) {
-            pin16 = DigitalPin.P12;
-        }
-        if (linePin == 5) {
-            pin16 = DigitalPin.P2;
-        }
-        if (linePin == 6) {
-            pin16 = DigitalPin.P8;
-        }
+    // //% blockId=getLine
+    // //% block="read line sensor %linePin"
+    // //% group="Sensor" weight=6
+    // export function getLine(linePin: Write_pin): number {
+    //     let pin16
+    //     if (linePin == 1) {
+    //         pin16 = DigitalPin.P0;
+    //     }
+    //     if (linePin == 2) {
+    //         pin16 = DigitalPin.P16;
+    //     }
+    //     if (linePin == 3) {
+    //         pin16 = DigitalPin.P1;
+    //     }
+    //     if (linePin == 4) {
+    //         pin16 = DigitalPin.P12;
+    //     }
+    //     if (linePin == 5) {
+    //         pin16 = DigitalPin.P2;
+    //     }
+    //     if (linePin == 6) {
+    //         pin16 = DigitalPin.P8;
+    //     }
 
-        return pins.digitalReadPin(pin16);
-    }
+    //     return pins.digitalReadPin(pin16);
+    // }
 }
