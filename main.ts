@@ -91,7 +91,9 @@ enum ServoPin {
     //% block="P13"
     P13 = DigitalPin.P13,
     //% block="P15"
-    P15 = DigitalPin.P15
+    P15 = DigitalPin.P15,
+    //% block="P16"
+    P16 = DigitalPin.P16
 }
 //转动方向
 enum RotationDirection {
@@ -121,7 +123,55 @@ enum Colors {
     //% block=黑
     Off = 0x000000
 }
+enum PotPin {
+    //% block="P0"
+    P0 = AnalogPin.P0,
+    //% block="P1"
+    P1 = AnalogPin.P1,
+    //% block="P2"
+    P2 = AnalogPin.P2,
+    //% block="P3"
+    P3 = AnalogPin.P3,
+    //% block="P4"
+    P4 = AnalogPin.P4,
+    //% block="P10"
+    P10 = AnalogPin.P10
+}
+enum SensorSide {
+    //% block="左"
+    Left = 1,
+    //% block="中"
+    Middle = 2,
+    //% block="右"
+    Right = 3
+}
 
+enum rocket {
+    //% block="X"
+
+    x = 1,
+
+    //% block="Y"
+
+    y = 2
+}
+enum rock {
+    //% block="up"
+
+    orient1 = 2,
+
+    //% block="down"
+
+    orient2 = 1,
+
+    //% block="left"
+
+    orient3 = 4,
+
+    //% block="right"
+
+    orient4 = 3
+}
 //color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 //% color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 namespace FIFAbit {
@@ -521,11 +571,12 @@ namespace FIFAbit {
     }
 
     //% blockId=ws2812b_set_led_rgb
-    //% block="设置第 %index 个灯RGB R %red G %green B %blue"
+    //% block="设置%index灯R %red G %green B %blue"
     //% index.min=0 index.defl=0
     //% red.min=0 red.max=255 red.defl=255
     //% green.min=0 green.max=255 green.defl=0
     //% blue.min=0 blue.max=255 blue.defl=0
+    //% inlineInputMode=inline
     //% group="LED" weight=4
     export function setLEDRGB(index: number, red: number, green: number, blue: number): void {
         if (currentStrip && index >= 0 && index < currentLEDCount) {
@@ -545,89 +596,403 @@ namespace FIFAbit {
         }
     }
 
-    
-
-    
-
-
     //#########################################################################
     //##################################传感器#################################
     //#########################################################################
-    let TCS3472_ADDR = 0x29;
-    let tcsInited = false;
 
-    //初始化tcs
-    export function tcsInit(): void {
-        if (!tcsInited) {
-            // 使能（PON + AEN）
-            pins.i2cWriteBuffer(TCS3472_ADDR, pins.createBufferFromArray([0x80, 0x03]));
-            // 积分时间
-            pins.i2cWriteBuffer(TCS3472_ADDR, pins.createBufferFromArray([0x81, 0x2B]));
-            basic.pause(50); // 等积分
+    //% blockId=potentiometer_read_raw
+    //% block="读取电位器 %pin 原始值"
+    //% group="Sensor" weight=99
+    export function readRawValue(pin: PotPin): number {
+        // 直接读取模拟值，范围0-1023
+        return pins.analogReadPin(pin as number)
+    }
 
-            tcsInited = true;
+    //% blockId=potentiometer_read_percent
+    //% block="读取电位器 %pin 百分比"
+    //% group="Sensor" weight=98
+    export function readPercentage(pin: PotPin): number {
+        // 读取原始值
+        let rawValue = pins.analogReadPin(pin as number)
+
+        // 转换为百分比 0-100
+        let percentage = (rawValue * 100) / 1023
+
+        // 确保在0-100范围内
+        percentage = Math.min(100, Math.max(0, percentage))
+
+        // 返回整数
+        return Math.round(percentage)
+    }
+
+    //% blockId=soil_read_raw
+    //% block="读取土壤湿度 %pin 原始值"
+    //% group="Sensor" weight=89
+    export function readRawValueTR(pin: PotPin): number {
+        // 直接读取模拟值，范围0-1023
+        return pins.analogReadPin(pin as number) 
+    }
+
+    //% blockId=soil_read_percent
+    //% block="读取土壤湿度 %pin 百分比"
+    //% group="Sensor" weight=88
+    export function readPercentageTR(pin: PotPin): number {
+        // 读取原始值
+        let rawValue = pins.analogReadPin(pin as number)
+
+        // 转换为百分比 0-100
+        let percentage = (rawValue * 100) / 1023
+
+        // 确保在0-100范围内
+        percentage = Math.min(100, Math.max(0, percentage))
+
+        // 返回整数
+        return Math.round(percentage)
+    }
+
+    //% blockId=button_is_pressed
+    //% block="按键 %pin 是否按下"
+    //% group="Sensor" weight=79
+    export function isPressed(pin: ServoPin): boolean {
+        let value = pins.digitalReadPin(pin as number)
+        // 返回 true 表示按下
+        return value === 0
+    }
+
+    // 存储引脚配置
+    let trigPin: DigitalPin
+    let echoPin: DigitalPin
+    let ultrasonic_isInitialized = false
+
+    //% blockId=ultrasonic_init
+    //% block="初始化超声波模块 Trig脚连接 %trig Echo脚连接 %echo"
+    //% group="超声波" weight=9
+    export function initUltrasonic(trig: ServoPin, echo: ServoPin): void {
+        trigPin = trig as number
+        echoPin = echo as number
+        ultrasonic_isInitialized = true
+
+        // 初始化引脚
+        pins.digitalWritePin(trigPin, 0)
+        pins.setPull(echoPin, PinPullMode.PullNone)
+    }
+
+    //% blockId=ultrasonic_read_distance
+    //% block="读取超声波距离（厘米）"
+    //% group="超声波" weight=8
+    export function readDistance(): number {
+        if (!ultrasonic_isInitialized) {
+            return 0
+        }
+
+        // 发送10us的高电平脉冲
+        pins.digitalWritePin(trigPin, 0)
+        control.waitMicros(2)
+        pins.digitalWritePin(trigPin, 1)
+        control.waitMicros(10)
+        pins.digitalWritePin(trigPin, 0)
+
+        // 读取高电平持续时间
+        // 注意：pins.pulseIn返回的是微秒
+        let duration = pins.pulseIn(echoPin, PulseValue.High, 50000)  // 50ms超时
+
+        // 计算距离（厘米）
+        // 声音速度：340m/s = 34000cm/s = 0.034cm/μs
+        // 往返距离，所以除以2
+        let distance = duration * 0.034 / 2
+
+        // 限制有效范围（通常超声波模块有效范围2-400cm）
+        if (distance < 2 || distance > 400) {
+            distance = 0
+        }
+
+        return Math.round(distance)
+    }
+
+    // 存储三个传感器的引脚
+    let leftPin: ServoPin
+    let middlePin: ServoPin
+    let rightPin: ServoPin
+    let line_isInitialized = false
+
+    // 引脚映射表
+    let pinMap: { [key: number]: DigitalPin } = {
+        1: DigitalPin.P0,  // 左默认P0
+        2: DigitalPin.P1,  // 中默认P1
+        3: DigitalPin.P2   // 右默认P2
+    }
+
+    //% blockId=linetracking_init
+    //% block="初始化巡线传感器|左引脚%left|中引脚%middle|右引脚%right"
+    //% group="Sensor" weight=59
+    export function initSensors(left: ServoPin, middle: ServoPin, right: ServoPin): void {
+        pinMap[1] = left as number
+        pinMap[2] = middle as number
+        pinMap[3] = right as number
+        line_isInitialized = true
+    }
+    //% blockId=linetracking_detect  
+    //% block="%position 传感器检测到黑线"
+    //% group="Sensor" weight=58
+    export function detectLine(position: SensorSide): boolean {
+        if (!line_isInitialized) return false
+        let pin = pinMap[position]
+        return pins.digitalReadPin(pin) === 1
+    }
+
+    //% blockId=linetracking_read_value
+    //% block="读取%position 传感器值"
+    //% group="Sensor" weight=57
+    export function readSensorValue(position: SensorSide): number {
+        if (!line_isInitialized) return 0
+        let pin = pinMap[position]
+        return pins.digitalReadPin(pin)
+    }
+
+
+    
+
+ 
+    //% blockId=rocker
+    //% block="Joystick %direction moved"
+    //% group="Sensor" weight=49
+    export function rocker(direction: rocket): number {
+        let GetBuff = pins.createBuffer(3)
+        GetBuff = pins.i2cReadBuffer(97, 3)
+        let re = GetBuff.getNumber(NumberFormat.Int8BE, direction)
+        if (direction == 2) {
+            return -re
+        } else {
+            return re
         }
     }
-    function tcsRaw(): number[] {
-        tcsInit();
-        // 发送读取命令
-        pins.i2cWriteNumber(TCS3472_ADDR, 0xB4, NumberFormat.UInt8BE);
+    //% blockId=rockerori
+    //% block="Joystick detected %orientation"
+    //% group="Sensor" weight=48
+    export function rockerori(orientation: rock): boolean {
+        let GetBuff2 = pins.createBuffer(3)
+        GetBuff2 = pins.i2cReadBuffer(97, 3)
+        let ud = GetBuff2.getNumber(NumberFormat.Int8BE, 2)
+        let lr = GetBuff2.getNumber(NumberFormat.Int8BE, 1)
+        let flag
+        if (orientation == 1) {
+            if (ud > 50)
+                flag = true
+            else
+                flag = false
+        }
+        if (orientation == 2) {
+            if (ud < -50)
+                flag = true
+            else
+                flag = false
+        }
+        if (orientation == 4) {
+            if (lr < -50)
+                flag = true
+            else
+                flag = false
+        }
+        if (orientation == 3) {
+            if (lr > 50)
+                flag = true
+            else
+                flag = false
+        }
+        return flag
 
-        // 读取8字节
-        let buf = pins.i2cReadBuffer(TCS3472_ADDR, 8);
-
-        let c = buf.getNumber(NumberFormat.UInt16LE, 0);
-        let r = buf.getNumber(NumberFormat.UInt16LE, 2);
-        let g = buf.getNumber(NumberFormat.UInt16LE, 4);
-        let b = buf.getNumber(NumberFormat.UInt16LE, 6);
-
-        return [c, r, g, b];
-    }
-    // 转标准 RGB（0~255）
-    function tcsRGB(): number[] {
-        let raw = tcsRaw();
-        let c = raw[0];
-
-        if (c == 0) return [0, 0, 0];
-
-        let r = raw[1] / c;
-        let g = raw[2] / c;
-        let b = raw[3] / c;
-
-        // 增益（关键）
-        let gain = 255;
-
-        r = r * gain;
-        g = g * gain;
-        b = b * gain;
-
-        // 限制范围
-        r = Math.min(255, Math.max(0, r));
-        g = Math.min(255, Math.max(0, g));
-        b = Math.min(255, Math.max(0, b));
-
-        return [
-            Math.round(r),
-            Math.round(g),
-            Math.round(b)
-        ];
-    }
-    //% blockId=getRGB
-    //% block="color sensor %color"
-    //% group="Sensor" weight=9
-    export function getRGB(color: enRGB): number {
-        let rgb = tcsRGB();
-        return rgb[color];
     }
 
-    //% blockId=getRGBC
-    //% block="TCS get light intensity"
-    //% group="Sensor" weight=8
-    // export function getRGBC(): number {
-    //     let c = tcsRaw()[0];
-    //     let value = c / 256;
-    //     return Math.min(255, Math.round(value));
-    // }
+
+
+
+    // I2C地址
+    const VEML6040_I2C_ADDRESS = 0x10
+
+    // 寄存器地址
+    const VEML6040_CONF_REG = 0x00
+    const VEML6040_RED_REG = 0x08
+    const VEML6040_GREEN_REG = 0x09
+    const VEML6040_BLUE_REG = 0x0A
+    const VEML6040_WHITE_REG = 0x0B
+
+    // 配置参数
+    const VEML6040_CONF_IT_40MS = 0x00
+    const VEML6040_CONF_IT_80MS = 0x10
+    const VEML6040_CONF_IT_160MS = 0x20
+    const VEML6040_CONF_IT_320MS = 0x30
+    const VEML6040_CONF_IT_640MS = 0x40
+    const VEML6040_CONF_IT_1280MS = 0x50
+    const VEML6040_CONF_TRIG = 0x04
+    const VEML6040_CONF_AF = 0x02
+    const VEML6040_CONF_SD = 0x01
+
+    // 定义颜色枚举
+    export enum ColorsSensor {
+        //% block="红"
+        Red = 1,
+        //% block="橙"
+        Orange = 2,
+        //% block="黄"
+        Yellow = 3,
+        //% block="绿"
+        Green = 4,
+        //% block="青"
+        Cyan = 5,
+        //% block="蓝"
+        Blue = 6,
+        //% block="紫"
+        Purple = 7,
+        //% block="黑"
+        Black = 8,
+        //% block="白"
+        White = 9
+    }
+
+    // 传感器状态
+    let isInitialized = false
+
+    // 初始化传感器
+    //% blockId=veml6040_init
+    //% block="初始化颜色传感器"
+    //% group="颜色传感器" weight=100
+    export function initSensor(): void {
+        // 发送配置：40ms积分时间，启用自动模式
+        let config = VEML6040_CONF_IT_320MS | VEML6040_CONF_AF
+        writeRegister(VEML6040_CONF_REG, config)
+
+        isInitialized = true
+        basic.pause(100)  // 等待传感器初始化
+    }
+
+    // 写入寄存器
+    function writeRegister(reg: number, value: number): void {
+        let buffer = pins.createBuffer(3)
+        buffer[0] = reg
+        buffer[1] = value & 0xFF
+        buffer[2] = (value >> 8) & 0xFF
+        pins.i2cWriteBuffer(VEML6040_I2C_ADDRESS, buffer)
+    }
+
+    // 读取寄存器
+    function readRegister(reg: number): number {
+        pins.i2cWriteNumber(VEML6040_I2C_ADDRESS, reg, NumberFormat.UInt8BE)
+        let data = pins.i2cReadNumber(VEML6040_I2C_ADDRESS, NumberFormat.UInt16LE)
+        return data
+    }
+
+    // 确保传感器已初始化
+    function ensureInitialized(): void {
+        if (!isInitialized) {
+            initSensor()
+        }
+    }
+
+    //% blockId=veml6040_is_color
+    //% block="是否识别到颜色 %color"
+    //% group="颜色传感器" weight=90
+    export function isColor(color: ColorsSensor): boolean {
+        ensureInitialized()
+
+        // 读取RGB值
+        let red = readRegister(VEML6040_RED_REG)
+        let green = readRegister(VEML6040_GREEN_REG)
+        let blue = readRegister(VEML6040_BLUE_REG)
+        let white = readRegister(VEML6040_WHITE_REG)
+
+        // 计算相对强度
+        let total = red + green + blue
+        if (total === 0) return color === ColorsSensor.Black
+
+        let rRatio = red * 100 / total
+        let gRatio = green * 100 / total
+        let bRatio = blue * 100 / total
+
+        // 判断亮度
+        let brightness = white
+
+        // 根据颜色参数进行判断
+        switch (color) {
+            case ColorsSensor.Red:
+                return rRatio > 60 && gRatio < 30 && bRatio < 30
+
+            case ColorsSensor.Orange:
+                return rRatio > 50 && gRatio > 30 && bRatio < 20
+
+            case ColorsSensor.Yellow:
+                return rRatio > 40 && gRatio > 40 && bRatio < 20
+
+            case ColorsSensor.Green:
+                return gRatio > 50 && rRatio < 30 && bRatio < 30
+
+            case ColorsSensor.Cyan:
+                return bRatio > 40 && gRatio > 30 && rRatio < 20
+
+            case ColorsSensor.Blue:
+                return bRatio > 50 && rRatio < 30 && gRatio < 30
+
+            case ColorsSensor.Purple:
+                return rRatio > 30 && bRatio > 30 && gRatio < 30
+
+            case ColorsSensor.Black:
+                return brightness < 100
+
+            case ColorsSensor.White:
+                if (brightness < 3000) return false
+                return Math.abs(rRatio - 33) < 10 &&
+                    Math.abs(gRatio - 33) < 10 &&
+                    Math.abs(bRatio - 33) < 10
+
+            default:
+                return false
+        }
+    }
+
+    //% blockId=veml6040_read_red
+    //% block="读取红色值"
+    //% group="颜色传感器" weight=80
+    export function readRed(): number {
+        ensureInitialized()
+        return readRegister(VEML6040_RED_REG)
+    }
+
+    //% blockId=veml6040_read_green
+    //% block="读取绿色值"
+    //% group="颜色传感器" weight=70
+    export function readGreen(): number {
+        ensureInitialized()
+        return readRegister(VEML6040_GREEN_REG)
+    }
+
+    //% blockId=veml6040_read_blue
+    //% block="读取蓝色值"
+    //% group="颜色传感器" weight=60
+    export function readBlue(): number {
+        ensureInitialized()
+        return readRegister(VEML6040_BLUE_REG)
+    }
+
+    //% blockId=veml6040_read_white
+    //% block="读取亮度值"
+    //% group="颜色传感器" weight=50
+    export function readWhite(): number {
+        ensureInitialized()
+        return readRegister(VEML6040_WHITE_REG)
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //% blockId=getUltrasonic
     //% block="ultrasonic sensor %ultpins distance (%unit)"
