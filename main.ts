@@ -401,51 +401,118 @@ namespace FIFAbit {
     //#########################################################################
     //##################################灯条#################################
     //#########################################################################
-    // 全局灯条变量
-    let currentStrip: neopixel.Strip
+    // RGB LED控制类
+    class WS2812BStrip {
+        private buffer: Buffer
+        private pin: DigitalPin
+        private length: number
+        private brightness: number = 255
+
+        constructor(pin: DigitalPin, length: number) {
+            this.pin = pin
+            this.length = length
+            // 每个LED需要3个字节 (RGB)
+            this.buffer = pins.createBuffer(length * 3)
+            // 初始化引脚
+            pins.digitalWritePin(pin, 0)
+        }
+
+        // 设置单个LED的RGB颜色
+        setPixelColor(index: number, rgb: number): void {
+            if (index < 0 || index >= this.length) return
+
+            let r = (rgb >> 16) & 0xFF
+            let g = (rgb >> 8) & 0xFF
+            let b = rgb & 0xFF
+
+            // 应用亮度
+            if (this.brightness < 255) {
+                r = (r * this.brightness) >> 8
+                g = (g * this.brightness) >> 8
+                b = (b * this.brightness) >> 8
+            }
+
+            let offset = index * 3
+            // WS2812B使用GRB顺序
+            this.buffer[offset] = g     // G
+            this.buffer[offset + 1] = r // R
+            this.buffer[offset + 2] = b // B
+        }
+
+        // 显示所有LED
+        show(): void {
+            // 使用ws2812b库发送数据
+            ws2812b.sendBuffer(this.buffer, this.pin)
+        }
+
+        // 清除所有LED
+        clear(): void {
+            for (let i = 0; i < this.buffer.length; i++) {
+                this.buffer[i] = 0
+            }
+        }
+
+        // 设置亮度
+        setBrightness(brightness: number): void {
+            this.brightness = Math.min(255, Math.max(0, brightness))
+        }
+    }
+
+    // 全局变量存储当前灯条
+    let currentStrip: WS2812BStrip
     let currentLEDCount: number = 8
 
-    //% blockId=rgb_strip_init
+    //% blockId=ws2812b_init
     //% block="初始化灯条 引脚 %pin 灯数 %ledCount"
     //% ledCount.min=1 ledCount.max=50 ledCount.defl=8
     //% group="LED" weight=9
     export function initStrip(pin: ServoPin, ledCount: number): void {
-        // 创建灯条
-        currentStrip = neopixel.create(pin as number, ledCount, NeoPixelMode.RGB)
+        currentStrip = new WS2812BStrip(pin as number, ledCount)
         currentLEDCount = ledCount
-        // 默认亮度
-        currentStrip.setBrightness(255)
     }
 
-    //% blockId=rgb_strip_set_all
-    //% block="设置全部灯为颜色 %color"
+    //% blockId=ws2812b_set_brightness
+    //% block="设置亮度 %brightness"
+    //% brightness.min=0 brightness.max=255 brightness.defl=128
     //% group="LED" weight=8
-    export function setAllColor(color: Colors): void {
+    export function setBrightness(brightness: number): void {
         if (currentStrip) {
-            currentStrip.showColor(color)
-            currentStrip.show()
+            currentStrip.setBrightness(brightness)
         }
     }
 
-    //% blockId=rgb_strip_set_all_rgb
-    //% block="设置全部灯RGB R %red G %green B %blue"
-    //% red.min=0 red.max=255 red.defl=255
-    //% green.min=0 green.max=255 green.defl=255
-    //% blue.min=0 blue.max=255 blue.defl=255
+    //% blockId=ws2812b_set_all
+    //% block="设置全部灯为颜色 %color"
     //% group="LED" weight=7
-    export function setAllRGB(red: number, green: number, blue: number): void {
+    export function setAllColor(color: Colors): void {
         if (currentStrip) {
             for (let i = 0; i < currentLEDCount; i++) {
-                currentStrip.setPixelColor(i, neopixel.rgb(red, green, blue))
+                currentStrip.setPixelColor(i, color)
             }
             currentStrip.show()
         }
     }
 
-    //% blockId=rgb_strip_set_led
+    //% blockId=ws2812b_set_all_rgb
+    //% block="设置全部灯RGB R %red G %green B %blue"
+    //% red.min=0 red.max=255 red.defl=255
+    //% green.min=0 green.max=255 green.defl=0
+    //% blue.min=0 blue.max=255 blue.defl=0
+    //% group="LED" weight=6
+    export function setAllRGB(red: number, green: number, blue: number): void {
+        if (currentStrip) {
+            let rgb = (red << 16) | (green << 8) | blue
+            for (let i = 0; i < currentLEDCount; i++) {
+                currentStrip.setPixelColor(i, rgb)
+            }
+            currentStrip.show()
+        }
+    }
+
+    //% blockId=ws2812b_set_led
     //% block="设置第 %index 个灯为颜色 %color"
     //% index.min=0 index.defl=0
-    //% group="LED" weight=6
+    //% group="LED" weight=5
     export function setLEDColor(index: number, color: Colors): void {
         if (currentStrip && index >= 0 && index < currentLEDCount) {
             currentStrip.setPixelColor(index, color)
@@ -453,29 +520,32 @@ namespace FIFAbit {
         }
     }
 
-    //% blockId=rgb_strip_set_led_rgb
+    //% blockId=ws2812b_set_led_rgb
     //% block="设置第 %index 个灯RGB R %red G %green B %blue"
     //% index.min=0 index.defl=0
     //% red.min=0 red.max=255 red.defl=255
-    //% green.min=0 green.max=255 green.defl=255
-    //% blue.min=0 blue.max=255 blue.defl=255
-    //% group="LED" weight=5
+    //% green.min=0 green.max=255 green.defl=0
+    //% blue.min=0 blue.max=255 blue.defl=0
+    //% group="LED" weight=4
     export function setLEDRGB(index: number, red: number, green: number, blue: number): void {
         if (currentStrip && index >= 0 && index < currentLEDCount) {
-            currentStrip.setPixelColor(index, neopixel.rgb(red, green, blue))
+            let rgb = (red << 16) | (green << 8) | blue
+            currentStrip.setPixelColor(index, rgb)
             currentStrip.show()
         }
     }
 
-    //% blockId=rgb_strip_clear
+    //% blockId=ws2812b_clear
     //% block="熄灭全部灯"
-    //% group="LED" weight=4
+    //% group="LED" weight=3
     export function clearAll(): void {
         if (currentStrip) {
             currentStrip.clear()
             currentStrip.show()
         }
     }
+
+    
 
     
 
