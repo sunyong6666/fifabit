@@ -1,4 +1,4 @@
-const i2cAddress = 0x10;  // I2C设备地址
+const i2cAddress = 0x09;  // I2C设备地址
 
 // 运动类型
 enum motionType {
