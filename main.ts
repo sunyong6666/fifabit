@@ -935,7 +935,9 @@ namespace FIFAbit {
         let regBuf = pins.createBuffer(1)
         regBuf[0] = reg
 
-        pins.i2cWriteBuffer(VEML6040_ADDR, regBuf, false)
+        pins.i2cWriteBuffer(VEML6040_ADDR, regBuf, true)
+        basic.pause(5)
+        
         let data = pins.i2cReadBuffer(VEML6040_ADDR, 2, false)
 
         return data[0] | (data[1] << 8)
@@ -1006,6 +1008,29 @@ namespace FIFAbit {
             default:
                 return 0
         }
+         
+        // let r = readReg(REG_RED)
+        // let g = readReg(REG_GREEN)
+        // let b = readReg(REG_BLUE)
+        // let w = readReg(REG_WHITE)
+
+        // if (w == 0) return 0
+
+        // let nr = Math.round(r * 255 / w)
+        // let ng = Math.round(g * 255 / w)
+        // let nb = Math.round(b * 255 / w)
+
+        // // 限制范围（非常重要）
+        // if (nr > 255) nr = 255
+        // if (ng > 255) ng = 255
+        // if (nb > 255) nb = 255
+
+        // switch (channel) {
+        //     case enRGB.Red: return nr
+        //     case enRGB.Green: return ng
+        //     case enRGB.Blue: return nb
+        //     default: return 0
+        // }
     }
 
     //% blockId=readWhiteValue
