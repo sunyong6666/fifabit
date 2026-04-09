@@ -70,7 +70,7 @@ enum Write_pin {
     //% block="P8"
     w5 = 6
 }
-//舵机端口
+//舵机端口(所有数字引脚都使用的此下拉)
 enum ServoPin {
     //% block="P0"
     P0 = DigitalPin.P0,

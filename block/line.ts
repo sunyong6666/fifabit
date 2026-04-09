@@ -1,24 +1,45 @@
 //----------------------------------巡线-------------------------------
+enum LineSensorPin {
+    //% block="P0" weight=10
+    P0 = DigitalPin.P0,
+    //% block="P1" weight=9
+    P1 = DigitalPin.P1,
+    //% block="P2" weight=8
+    P2 = DigitalPin.P2,
+    //% block="P8" weight=7
+    P8 = DigitalPin.P8,
+    //% block="P12" weight=6
+    P12 = DigitalPin.P12,
+    //% block="P13" weight=5
+    P13 = DigitalPin.P13,
+    //% block="P15" weight=4
+    P15 = DigitalPin.P15,
+    //% block="P16" weight=3
+    P16 = DigitalPin.P16
+}
 
 namespace FIFAbit {
     // 存储三个传感器的引脚
-    let leftPin: ServoPin
-    let middlePin: ServoPin
-    let rightPin: ServoPin
+    let leftPin: LineSensorPin
+    let middlePin: LineSensorPin
+    let rightPin: LineSensorPin
     let line_isInitialized = false
 
     // 引脚映射表
-    let pinMap: { [key: number]: DigitalPin } = {
-        1: DigitalPin.P0,  // 左默认P0
-        2: DigitalPin.P1,  // 中默认P1
-        3: DigitalPin.P2   // 右默认P2
+    let pinMap: { [key: number]: LineSensorPin } = {
+        1: LineSensorPin.P0,  // 左默认P0
+        2: LineSensorPin.P1,  // 中默认P1
+        3: LineSensorPin.P2   // 右默认P2
     }
 
     //% blockId=linetracking_init
     //% block="初始化巡线传感器引脚|左探头%left|中探头%middle|右探头%right"
     //% inlineInputMode=external
+    //% left.defl=LineSensorPin.P0
+    //% middle.defl=LineSensorPin.P1
+    //% right.defl=LineSensorPin.P2
     //% group="Line Tracking Sensor" weight=59
-    export function initSensors(left: ServoPin, middle: ServoPin, right: ServoPin): void {
+    export function initSensors(left: LineSensorPin, middle: LineSensorPin, right: LineSensorPin): void {
         pinMap[1] = left as number
         pinMap[2] = middle as number
         pinMap[3] = right as number
