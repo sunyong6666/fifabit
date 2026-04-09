@@ -703,7 +703,7 @@ namespace FIFAbit {
     //----------------------------------电位器-------------------------------
     //% blockId=potentiometer_read_raw
     //% block="读取电位器 %pin 原始值"
-    //% group="Sensor" weight=99
+    //% group="Potentiometer" weight=99
     export function readRawValue(pin: PotPin): number {
         // 直接读取模拟值，范围0-1023
         return pins.analogReadPin(pin as number)
@@ -711,7 +711,7 @@ namespace FIFAbit {
 
     //% blockId=potentiometer_read_percent
     //% block="读取电位器 %pin 百分比"
-    //% group="Sensor" weight=98
+    //% group="Potentiometer" weight=98
     export function readPercentage(pin: PotPin): number {
         // 读取原始值
         let rawValue = pins.analogReadPin(pin as number)
@@ -721,15 +721,13 @@ namespace FIFAbit {
 
         // 确保在0-100范围内
         percentage = Math.min(100, Math.max(0, percentage))
-
-        // 返回整数
         return Math.round(percentage)
     }
 
     //----------------------------------土壤湿度-------------------------------
     //% blockId=soil_read_raw
     //% block="读取土壤湿度 %pin 原始值"
-    //% group="Sensor" weight=89
+    //% group="Soil Moisture Sensor" weight=89
     export function readRawValueTR(pin: PotPin): number {
         // 直接读取模拟值，范围0-1023
         return pins.analogReadPin(pin as number) 
@@ -737,7 +735,7 @@ namespace FIFAbit {
 
     //% blockId=soil_read_percent
     //% block="读取土壤湿度 %pin 百分比"
-    //% group="Sensor" weight=88
+    //% group="Soil Moisture Sensor" weight=88
     export function readPercentageTR(pin: PotPin): number {
         // 读取原始值
         let rawValue = pins.analogReadPin(pin as number)
@@ -747,15 +745,13 @@ namespace FIFAbit {
 
         // 确保在0-100范围内
         percentage = Math.min(100, Math.max(0, percentage))
-
-        // 返回整数
         return Math.round(percentage)
     }
 
     //----------------------------------按键-------------------------------
     //% blockId=button_is_pressed
     //% block="按键 %pin 是否按下"
-    //% group="Sensor" weight=79
+    //% group="Button" weight=79
     export function isPressed(pin: ServoPin): boolean {
         let value = pins.digitalReadPin(pin as number)
         // 返回 true 表示按下
@@ -770,7 +766,7 @@ namespace FIFAbit {
 
     //% blockId=ultrasonic_init
     //% block="初始化超声波模块 Trig脚连接 %trig Echo脚连接 %echo"
-    //% group="超声波" weight=9
+    //% group="Ultrasonic" weight=9
     export function initUltrasonic(trig: ServoPin, echo: ServoPin): void {
         trigPin = trig as number
         echoPin = echo as number
@@ -783,7 +779,7 @@ namespace FIFAbit {
 
     //% blockId=ultrasonic_read_distance
     //% block="读取超声波距离（厘米）"
-    //% group="超声波" weight=8
+    //% group="Ultrasonic" weight=8
     export function readDistance(): number {
         if (!ultrasonic_isInitialized) {
             return 0
@@ -829,7 +825,7 @@ namespace FIFAbit {
 
     //% blockId=linetracking_init
     //% block="初始化巡线传感器|左引脚%left|中引脚%middle|右引脚%right"
-    //% group="Sensor" weight=59
+    //% group="Line Tracking Sensor" weight=59
     export function initSensors(left: ServoPin, middle: ServoPin, right: ServoPin): void {
         pinMap[1] = left as number
         pinMap[2] = middle as number
@@ -838,7 +834,7 @@ namespace FIFAbit {
     }
     //% blockId=linetracking_detect  
     //% block="%position 传感器检测到黑线"
-    //% group="Sensor" weight=58
+    //% group="Line Tracking Sensor" weight=58
     export function detectLine(position: SensorSide): boolean {
         if (!line_isInitialized) return false
         let pin = pinMap[position]
@@ -847,7 +843,7 @@ namespace FIFAbit {
 
     //% blockId=linetracking_read_value
     //% block="读取%position 传感器值"
-    //% group="Sensor" weight=57
+    //% group="Line Tracking Sensor" weight=57
     export function readSensorValue(position: SensorSide): number {
         if (!line_isInitialized) return 0
         let pin = pinMap[position]
@@ -857,7 +853,7 @@ namespace FIFAbit {
     //----------------------------------摇杆-------------------------------
     //% blockId=rocker
     //% block="Joystick %direction moved"
-    //% group="Sensor" weight=49
+    //% group="Roker" weight=49
     export function rocker(direction: rocket): number {
         let GetBuff = pins.createBuffer(3)
         GetBuff = pins.i2cReadBuffer(97, 3)
@@ -870,7 +866,7 @@ namespace FIFAbit {
     }
     //% blockId=rockerori
     //% block="Joystick detected %orientation"
-    //% group="Sensor" weight=48
+    //% group="Roker" weight=48
     export function rockerori(orientation: rock): boolean {
         let GetBuff2 = pins.createBuffer(3)
         GetBuff2 = pins.i2cReadBuffer(97, 3)
@@ -934,7 +930,7 @@ namespace FIFAbit {
         pins.i2cWriteBuffer(VEML6040_ADDR, buf, false);
     }
 
-    //读取颜色
+    //读取颜色值
     function readReg(reg: number): number {
         let regBuf = pins.createBuffer(1)
         regBuf[0] = reg
@@ -945,6 +941,7 @@ namespace FIFAbit {
         return data[0] | (data[1] << 8)
     }
 
+    //判断颜色
     export function getColor(): DetectedColor {
         let r = readReg(REG_RED)
         let g = readReg(REG_GREEN)
@@ -959,12 +956,12 @@ namespace FIFAbit {
         let ng = g / sum
         let nb = b / sum
 
-        // ⭐ 黑 / 白 优先判断
+        // 黑 / 白 优先判断
         if (w < 50) return DetectedColor.Black
         if (w > 2000 && Math.abs(r - g) < 200 && Math.abs(g - b) < 200)
             return DetectedColor.White
 
-        // ⭐ 颜色判断
+        // 颜色判断
         if (nr > 0.6 && ng < 0.3 && nb < 0.3) return DetectedColor.Red
         if (nr > 0.5 && ng > 0.3 && nb < 0.2) return DetectedColor.Orange
         if (nr > 0.4 && ng > 0.4 && nb < 0.2) return DetectedColor.Yellow
@@ -978,7 +975,7 @@ namespace FIFAbit {
 
     //% blockId=init_veml
     //% block="init VEML6040"
-    //% group="Sensor" weight=39
+    //% group="Color Sensor" weight=39
     export function init_veml(): void {
         if (!veml_initialized) {
             setConfiguration();
@@ -990,14 +987,14 @@ namespace FIFAbit {
 
     //% blockId=isColorDetected
     //% block="识别到颜色 %color"
-    //% group="Sensor" weight=38
+    //% group="Color Sensor" weight=38
     export function isColorDetected(color: DetectedColor): boolean {
         return getColor() == color
     }
 
     //% blockId=readRGBValue
     //% block="读取 %channel 值"
-    //% group="Sensor" weight=37
+    //% group="Color Sensor" weight=37
     export function readRGBValue(channel: enRGB): number {
         switch (channel) {
             case enRGB.Red:
@@ -1013,94 +1010,9 @@ namespace FIFAbit {
 
     //% blockId=readWhiteValue
     //% block="读取亮度值"
-    //% group="Sensor" weight=36
+    //% group="Color Sensor" weight=36
     export function readWhiteValue(): number {
         return readReg(REG_WHITE)
     }
 
-
-    //% block="readAllColour"
-    export function readAllColour(): number[] {
-
-        // 读取各通道
-        let r = readReg(REG_RED)
-        basic.pause(320)
-        let g = readReg(REG_GREEN)
-        basic.pause(320)
-        let b = readReg(REG_BLUE)
-        basic.pause(320)
-        let w = readReg(REG_WHITE)
-
-        return [r, g, b, w]
-    }
-
-
-    // //% blockId=getUltrasonic
-    // //% block="ultrasonic sensor %ultpins distance (%unit)"
-    // //% ultpins.fieldOptions.width=220
-    // //% ultpins.fieldOptions.columns=2
-    // //% group="Sensor" weight=7
-    // export function getUltrasonic(ultpins: Ultrasonic_pin, unit: PingUnit, maxCmDistance = 500): number {
-    //     let d
-    //     let distance
-    //     let echopin
-    //     let trigpin
-    //     if (ultpins == 13) {
-    //         trigpin = DigitalPin.P0;
-    //         echopin = DigitalPin.P13;
-    //     } else if (ultpins == 114) {
-    //         trigpin = DigitalPin.P1;
-    //         echopin = DigitalPin.P14;
-    //     } else if (ultpins == 129) {
-    //         trigpin = DigitalPin.P12;
-    //         echopin = DigitalPin.P9;
-    //     } else if (ultpins == 215) {
-    //         trigpin = DigitalPin.P2;
-    //         echopin = DigitalPin.P15;
-    //     }
-
-    //     pins.setPull(trigpin, PinPullMode.PullNone);
-    //     pins.digitalWritePin(trigpin, 0);
-    //     control.waitMicros(2);
-    //     pins.digitalWritePin(trigpin, 1);
-    //     control.waitMicros(10);
-    //     pins.digitalWritePin(trigpin, 0);
-    //     // read pulse
-    //     d = pins.pulseIn(echopin, PulseValue.High, maxCmDistance * 50);
-    //     distance = d * 34 / 2 / 1000 * 3 / 2;
-    //     switch (unit) {
-    //         case PingUnit.Centimeters: return Math.round(distance);
-    //         case PingUnit.Inches: return Math.round(distance / 30.48);
-    //         default: return Math.round(d);
-    //     }
-    // }
-
-
-
-    // //% blockId=getLine
-    // //% block="read line sensor %linePin"
-    // //% group="Sensor" weight=6
-    // export function getLine(linePin: Write_pin): number {
-    //     let pin16
-    //     if (linePin == 1) {
-    //         pin16 = DigitalPin.P0;
-    //     }
-    //     if (linePin == 2) {
-    //         pin16 = DigitalPin.P16;
-    //     }
-    //     if (linePin == 3) {
-    //         pin16 = DigitalPin.P1;
-    //     }
-    //     if (linePin == 4) {
-    //         pin16 = DigitalPin.P12;
-    //     }
-    //     if (linePin == 5) {
-    //         pin16 = DigitalPin.P2;
-    //     }
-    //     if (linePin == 6) {
-    //         pin16 = DigitalPin.P8;
-    //     }
-
-    //     return pins.digitalReadPin(pin16);
-    // }
 }
