@@ -1070,15 +1070,28 @@ namespace FIFAbit {
 
         updateRGB()
 
+        let r = cacheR
+        let g = cacheG
+        let b = cacheB
+
+        let sum = r + g + b
+
+        if (sum <= 0) return 0
+
+        let nr = Math.round(r * 255 / sum)
+        let ng = Math.round(g * 255 / sum)
+        let nb = Math.round(b * 255 / sum)
+
+        // ⭐ 限制范围（必须）
+        if (nr > 255) nr = 255
+        if (ng > 255) ng = 255
+        if (nb > 255) nb = 255
+
         switch (channel) {
-            case enRGB.Red:
-                return cacheR
-            case enRGB.Green:
-                return cacheG
-            case enRGB.Blue:
-                return cacheB
-            default:
-                return 0
+            case enRGB.Red: return nr
+            case enRGB.Green: return ng
+            case enRGB.Blue: return nb
+            default: return 0
         }
     }
 
