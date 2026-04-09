@@ -11,6 +11,7 @@
         "main.blocks",
         "main.ts",
         "block/veml6040.ts",
+        "sensors/VEML6040.ts",
         "_locales/zh/fifabit-strings.json",
         "README.md"
     ],
