@@ -37,9 +37,12 @@ enum motorDirection {
 
 // 颜色
 enum enRGB {
-    R = 0,
-    G = 1,
-    B = 2,
+    //% block="R"
+    Red,
+    //% block="G"
+    Green,
+    //% block="B"
+    Blue,
 }
 // 超声波
 enum Ultrasonic_pin {
@@ -102,7 +105,7 @@ enum RotationDirection {
     //% block="counterclockwise"
     Counterclockwise = -1
 }
-// 预定义颜色
+// 灯条预定义颜色
 enum Colors {
     //% block=红
     Red = 0xFF0000,
@@ -148,30 +151,42 @@ enum SensorSide {
 
 enum rocket {
     //% block="X"
-
     x = 1,
-
     //% block="Y"
-
     y = 2
 }
 enum rock {
     //% block="up"
-
     orient1 = 2,
-
     //% block="down"
-
     orient2 = 1,
-
     //% block="left"
-
     orient3 = 4,
-
     //% block="right"
-
     orient4 = 3
 }
+
+enum DetectedColor {
+    //% block="红色"
+    Red,
+    //% block="橙色"
+    Orange,
+    //% block="黄色"
+    Yellow,
+    //% block="绿色"
+    Green,
+    //% block="青色"
+    Cyan,
+    //% block="蓝色"
+    Blue,
+    //% block="紫色"
+    Purple,
+    //% block="白色"
+    White,
+    //% block="黑色"
+    Black
+}
+
 //color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 //% color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 namespace FIFAbit {
@@ -367,28 +382,9 @@ namespace FIFAbit {
     export function servo1Set(pin: ServoPin, value: number): void {
         pins.servoWritePin(pin, value)
     }
-    // //% blockId=servo1Increase
-    // //% block="180舵机 %servoPin 增加 %value °"
-    // //% value.min=0 value.max=180 value.defl=10
-    // //% group="Servo Motor" weight=8
-    // export function servo1Increase(servoPin: ServoPin, value: number): void {
-    //     let currentAngle = pins.servoReadPin(servoPin)
-    //     let newAngle = Math.min(180, Math.max(0, currentAngle + value))
-    //     pins.servoWritePin(servoPin, newAngle)
-    // }
-
-    // //% blockId=servo1Decrease
-    // //% block="180舵机 %servoPin 减少 %value °"
-    // //% value.min=0 value.max=180 value.defl=10
-    // //% group="Servo Motor" weight=7
-    // export function servo1Decrease(servoPin: ServoPin, value: number): void {
-    //     let currentAngle = pins.servoReadPin(servoPin)
-    //     let newAngle = Math.min(180, Math.max(0, currentAngle - value))
-    //     pins.servoWritePin(servoPin, newAngle)
-    // }
 
     //% blockId=servo1Stop
-    //% block="停止180舵机 %servoPin 输出"
+    //% block="停止180舵机 %servoPin"
     //% group="Servo Motor" weight=6
     export function servo1Stop(servoPin: ServoPin): void {
         pins.digitalWritePin(servoPin, 0)
@@ -949,6 +945,37 @@ namespace FIFAbit {
         return data[0] | (data[1] << 8)
     }
 
+    export function getColor(): DetectedColor {
+        let r = readReg(REG_RED)
+        let g = readReg(REG_GREEN)
+        let b = readReg(REG_BLUE)
+        let w = readReg(REG_WHITE)
+
+        let sum = r + g + b
+
+        if (sum == 0) return DetectedColor.Black
+
+        let nr = r / sum
+        let ng = g / sum
+        let nb = b / sum
+
+        // ⭐ 黑 / 白 优先判断
+        if (w < 50) return DetectedColor.Black
+        if (w > 2000 && Math.abs(r - g) < 200 && Math.abs(g - b) < 200)
+            return DetectedColor.White
+
+        // ⭐ 颜色判断
+        if (nr > 0.6 && ng < 0.3 && nb < 0.3) return DetectedColor.Red
+        if (nr > 0.5 && ng > 0.3 && nb < 0.2) return DetectedColor.Orange
+        if (nr > 0.4 && ng > 0.4 && nb < 0.2) return DetectedColor.Yellow
+        if (ng > 0.6 && nr < 0.3 && nb < 0.3) return DetectedColor.Green
+        if (ng > 0.4 && nb > 0.4) return DetectedColor.Cyan
+        if (nb > 0.6 && nr < 0.3) return DetectedColor.Blue
+        if (nr > 0.4 && nb > 0.4) return DetectedColor.Purple
+
+        return DetectedColor.White
+    }
+
     //% blockId=init_veml
     //% block="init VEML6040"
     //% group="Sensor" weight=39
@@ -961,37 +988,36 @@ namespace FIFAbit {
         }
     }
 
-    
-
-    // ====== RGB ======
-    function red(): number {
-        return readReg(REG_RED)
+    //% blockId=isColorDetected
+    //% block="识别到颜色 %color"
+    //% group="Sensor" weight=38
+    export function isColorDetected(color: DetectedColor): boolean {
+        return getColor() == color
     }
 
-    function green(): number {
-        return readReg(REG_GREEN)
+    //% blockId=readRGBValue
+    //% block="读取 %channel 值"
+    //% group="Sensor" weight=37
+    export function readRGBValue(channel: enRGB): number {
+        switch (channel) {
+            case enRGB.Red:
+                return readReg(REG_RED)
+            case enRGB.Green:
+                return readReg(REG_GREEN)
+            case enRGB.Blue:
+                return readReg(REG_BLUE)
+            default:
+                return 0
+        }
     }
 
-    function blue(): number {
-        return readReg(REG_BLUE)
-    }
-
-    function white(): number {
+    //% blockId=readWhiteValue
+    //% block="读取亮度值"
+    //% group="Sensor" weight=36
+    export function readWhiteValue(): number {
         return readReg(REG_WHITE)
     }
 
-
-    // ====== CCT ======
-    function cct(): number {
-        let r = red()
-        let g = green()
-        let b = blue()
-
-        let ccti = ((r - b) / g) + 0.5;
-        let cct = 4278.6 * Math.pow(ccti, -1.2455)
-
-        return Math.round(cct)
-    }
 
     //% block="readAllColour"
     export function readAllColour(): number[] {
@@ -1007,16 +1033,6 @@ namespace FIFAbit {
 
         return [r, g, b, w]
     }
-
-
-
-
-
-
-
-
-
-
 
 
     // //% blockId=getUltrasonic
