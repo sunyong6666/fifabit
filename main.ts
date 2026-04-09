@@ -704,6 +704,7 @@ namespace FIFAbit {
     //##################################传感器#################################
     //#########################################################################
 
+    //----------------------------------电位器-------------------------------
     //% blockId=potentiometer_read_raw
     //% block="读取电位器 %pin 原始值"
     //% group="Sensor" weight=99
@@ -729,6 +730,7 @@ namespace FIFAbit {
         return Math.round(percentage)
     }
 
+    //----------------------------------土壤湿度-------------------------------
     //% blockId=soil_read_raw
     //% block="读取土壤湿度 %pin 原始值"
     //% group="Sensor" weight=89
@@ -754,6 +756,7 @@ namespace FIFAbit {
         return Math.round(percentage)
     }
 
+    //----------------------------------按键-------------------------------
     //% blockId=button_is_pressed
     //% block="按键 %pin 是否按下"
     //% group="Sensor" weight=79
@@ -763,6 +766,7 @@ namespace FIFAbit {
         return value === 0
     }
 
+    //----------------------------------超声波-------------------------------
     // 存储引脚配置
     let trigPin: DigitalPin
     let echoPin: DigitalPin
@@ -813,6 +817,7 @@ namespace FIFAbit {
         return Math.round(distance)
     }
 
+    //----------------------------------巡线-------------------------------
     // 存储三个传感器的引脚
     let leftPin: ServoPin
     let middlePin: ServoPin
@@ -853,10 +858,7 @@ namespace FIFAbit {
         return pins.digitalReadPin(pin)
     }
 
-
-    
-
- 
+    //----------------------------------摇杆-------------------------------
     //% blockId=rocker
     //% block="Joystick %direction moved"
     //% group="Sensor" weight=49
@@ -908,184 +910,103 @@ namespace FIFAbit {
     }
 
 
+    //----------------------------------颜色传感器-------------------------------
+    // ===== VEML6040 I2C 地址 =====
+    const VEML6040_ADDR = 0x10
 
+    // ===== 寄存器地址 =====
+    const REG_CONF = 0x00
+    const REG_RED = 0x08
+    const REG_GREEN = 0x09
+    const REG_BLUE = 0x0A
+    const REG_WHITE = 0x0B
 
-    // I2C地址
-    const VEML6040_I2C_ADDRESS = 0x10
+    // ===== 积分时间 =====
+    const IT_320MS = 0x30
 
-    // 寄存器地址
-    const VEML6040_CONF_REG = 0x00
-    const VEML6040_RED_REG = 0x08
-    const VEML6040_GREEN_REG = 0x09
-    const VEML6040_BLUE_REG = 0x0A
-    const VEML6040_WHITE_REG = 0x0B
+    // ===== 自动 / 强制 =====
+    const AF_AUTO = 0x00
+    const SD_ENABLE = 0x00
 
-    // 配置参数
-    const VEML6040_CONF_IT_40MS = 0x00
-    const VEML6040_CONF_IT_80MS = 0x10
-    const VEML6040_CONF_IT_160MS = 0x20
-    const VEML6040_CONF_IT_320MS = 0x30
-    const VEML6040_CONF_IT_640MS = 0x40
-    const VEML6040_CONF_IT_1280MS = 0x50
-    const VEML6040_CONF_TRIG = 0x04
-    const VEML6040_CONF_AF = 0x02
-    const VEML6040_CONF_SD = 0x01
+    let veml_initialized = false
 
-    // 定义颜色枚举
-    export enum ColorsSensor {
-        //% block="红"
-        Red = 1,
-        //% block="橙"
-        Orange = 2,
-        //% block="黄"
-        Yellow = 3,
-        //% block="绿"
-        Green = 4,
-        //% block="青"
-        Cyan = 5,
-        //% block="蓝"
-        Blue = 6,
-        //% block="紫"
-        Purple = 7,
-        //% block="黑"
-        Black = 8,
-        //% block="白"
-        White = 9
+    function setConfiguration() {
+        let buf = pins.createBuffer(3)
+        buf[0] = REG_CONF;
+        buf[1] = IT_320MS | AF_AUTO | SD_ENABLE;
+        buf[2] = 0;
+        pins.i2cWriteBuffer(VEML6040_ADDR, buf, false);
     }
 
-    // 传感器状态
-    let isInitialized = false
+    //读取颜色
+    function readReg(reg: number): number {
+        let regBuf = pins.createBuffer(1)
+        regBuf[0] = reg
 
-    // 初始化传感器
-    //% blockId=veml6040_init
-    //% block="初始化颜色传感器"
-    //% group="颜色传感器" weight=100
-    export function initSensor(): void {
-        // 发送配置：40ms积分时间，启用自动模式
-        let config = VEML6040_CONF_IT_320MS | VEML6040_CONF_AF
-        writeRegister(VEML6040_CONF_REG, config)
+        pins.i2cWriteBuffer(VEML6040_ADDR, regBuf, false)
+        let data = pins.i2cReadBuffer(VEML6040_ADDR, 2, false)
 
-        isInitialized = true
-        basic.pause(100)  // 等待传感器初始化
+        return data[0] | (data[1] << 8)
     }
 
-    // 写入寄存器
-    function writeRegister(reg: number, value: number): void {
-        let buffer = pins.createBuffer(3)
-        buffer[0] = reg
-        buffer[1] = value & 0xFF
-        buffer[2] = (value >> 8) & 0xFF
-        pins.i2cWriteBuffer(VEML6040_I2C_ADDRESS, buffer)
-    }
-
-    // 读取寄存器
-    function readRegister(reg: number): number {
-        pins.i2cWriteNumber(VEML6040_I2C_ADDRESS, reg, NumberFormat.UInt8BE)
-        let data = pins.i2cReadNumber(VEML6040_I2C_ADDRESS, NumberFormat.UInt16LE)
-        return data
-    }
-
-    // 确保传感器已初始化
-    function ensureInitialized(): void {
-        if (!isInitialized) {
-            initSensor()
+    //% blockId=init_veml
+    //% block="init VEML6040"
+    //% group="Sensor" weight=39
+    export function init_veml(): void {
+        if (!veml_initialized) {
+            setConfiguration();
+            // 等待时间
+            basic.pause(320);
+            veml_initialized = true
         }
     }
 
-    //% blockId=veml6040_is_color
-    //% block="是否识别到颜色 %color"
-    //% group="颜色传感器" weight=90
-    export function isColor(color: ColorsSensor): boolean {
-        ensureInitialized()
+    
 
-        // 读取RGB值
-        let red = readRegister(VEML6040_RED_REG)
-        let green = readRegister(VEML6040_GREEN_REG)
-        let blue = readRegister(VEML6040_BLUE_REG)
-        let white = readRegister(VEML6040_WHITE_REG)
-
-        // 计算相对强度
-        let total = red + green + blue
-        if (total === 0) return color === ColorsSensor.Black
-
-        let rRatio = red * 100 / total
-        let gRatio = green * 100 / total
-        let bRatio = blue * 100 / total
-
-        // 判断亮度
-        let brightness = white
-
-        // 根据颜色参数进行判断
-        switch (color) {
-            case ColorsSensor.Red:
-                return rRatio > 60 && gRatio < 30 && bRatio < 30
-
-            case ColorsSensor.Orange:
-                return rRatio > 50 && gRatio > 30 && bRatio < 20
-
-            case ColorsSensor.Yellow:
-                return rRatio > 40 && gRatio > 40 && bRatio < 20
-
-            case ColorsSensor.Green:
-                return gRatio > 50 && rRatio < 30 && bRatio < 30
-
-            case ColorsSensor.Cyan:
-                return bRatio > 40 && gRatio > 30 && rRatio < 20
-
-            case ColorsSensor.Blue:
-                return bRatio > 50 && rRatio < 30 && gRatio < 30
-
-            case ColorsSensor.Purple:
-                return rRatio > 30 && bRatio > 30 && gRatio < 30
-
-            case ColorsSensor.Black:
-                return brightness < 100
-
-            case ColorsSensor.White:
-                if (brightness < 3000) return false
-                return Math.abs(rRatio - 33) < 10 &&
-                    Math.abs(gRatio - 33) < 10 &&
-                    Math.abs(bRatio - 33) < 10
-
-            default:
-                return false
-        }
+    // ====== RGB ======
+    function red(): number {
+        return readReg(REG_RED)
     }
 
-    //% blockId=veml6040_read_red
-    //% block="读取红色值"
-    //% group="颜色传感器" weight=80
-    export function readRed(): number {
-        ensureInitialized()
-        return readRegister(VEML6040_RED_REG)
+    function green(): number {
+        return readReg(REG_GREEN)
     }
 
-    //% blockId=veml6040_read_green
-    //% block="读取绿色值"
-    //% group="颜色传感器" weight=70
-    export function readGreen(): number {
-        ensureInitialized()
-        return readRegister(VEML6040_GREEN_REG)
+    function blue(): number {
+        return readReg(REG_BLUE)
     }
 
-    //% blockId=veml6040_read_blue
-    //% block="读取蓝色值"
-    //% group="颜色传感器" weight=60
-    export function readBlue(): number {
-        ensureInitialized()
-        return readRegister(VEML6040_BLUE_REG)
-    }
-
-    //% blockId=veml6040_read_white
-    //% block="读取亮度值"
-    //% group="颜色传感器" weight=50
-    export function readWhite(): number {
-        ensureInitialized()
-        return readRegister(VEML6040_WHITE_REG)
+    function white(): number {
+        return readReg(REG_WHITE)
     }
 
 
+    // ====== CCT ======
+    function cct(): number {
+        let r = red()
+        let g = green()
+        let b = blue()
 
+        let ccti = ((r - b) / g) + 0.5;
+        let cct = 4278.6 * Math.pow(ccti, -1.2455)
+
+        return Math.round(cct)
+    }
+
+    //% block="readAllColour"
+    export function readAllColour(): number[] {
+
+        // 读取各通道
+        let r = readReg(REG_RED)
+        basic.pause(320)
+        let g = readReg(REG_GREEN)
+        basic.pause(320)
+        let b = readReg(REG_BLUE)
+        basic.pause(320)
+        let w = readReg(REG_WHITE)
+
+        return [r, g, b, w]
+    }
 
 
 
