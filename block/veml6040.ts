@@ -19,6 +19,17 @@ enum DetectedColor {
     //% block="黑色"
     Black
 }
+
+// 颜色
+enum enRGB {
+    //% block="R"
+    Red,
+    //% block="G"
+    Green,
+    //% block="B"
+    Blue,
+}
+
 namespace FIFAbit {
     // ===== VEML6040 I2C 地址 =====
     const VEML6040_ADDR = 0x10
@@ -207,3 +218,4 @@ namespace FIFAbit {
         return nw
     }
 }
+

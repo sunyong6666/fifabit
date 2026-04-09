@@ -35,15 +35,6 @@ enum motorDirection {
     counterclockwise = 2
 }
 
-// 颜色
-enum enRGB {
-    //% block="R"
-    Red,
-    //% block="G"
-    Green,
-    //% block="B"
-    Blue,
-}
 // 超声波
 enum Ultrasonic_pin {
     //% block="(P13,P0)"
@@ -879,10 +870,6 @@ namespace FIFAbit {
                 flag = false
         }
         return flag
-
     }
-
-
-    
 
 }
