@@ -11,6 +11,7 @@
         "main.blocks",
         "main.ts",
         "block/veml6040.ts",
+        "block/line.ts",
         "_locales/zh/fifabit-strings.json",
         "README.md"
     ],
