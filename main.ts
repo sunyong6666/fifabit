@@ -987,6 +987,42 @@ namespace FIFAbit {
         }
     }
 
+
+    let cacheR = 0
+    let cacheG = 0
+    let cacheB = 0
+    let cacheW = 0
+
+    let lastReadTime = 0
+    const READ_INTERVAL = 320  // ⭐ 推荐 80~150ms
+
+    function updateRGB() {
+
+        if (!veml_initialized) {
+            init_veml()
+        }
+
+        let now = control.millis()
+
+        // ⭐ 控制读取频率（关键）
+        if (now - lastReadTime < READ_INTERVAL) return
+
+        let r = readReg(REG_RED)
+        let g = readReg(REG_GREEN)
+        let b = readReg(REG_BLUE)
+        let w = readReg(REG_WHITE)
+
+        // ⭐ 防止异常值
+        if (r == 0 && g == 0 && b == 0 && w == 0) return
+
+        cacheR = r
+        cacheG = g
+        cacheB = b
+        cacheW = w
+
+        lastReadTime = now
+    }
+
     //% blockId=isColorDetected
     //% block="识别到颜色 %color"
     //% group="Color Sensor" weight=38
@@ -998,16 +1034,16 @@ namespace FIFAbit {
     //% block="读取 %channel 值"
     //% group="Color Sensor" weight=37
     export function readRGBValue(channel: enRGB): number {
-        switch (channel) {
-            case enRGB.Red:
-                return readReg(REG_RED)
-            case enRGB.Green:
-                return readReg(REG_GREEN)
-            case enRGB.Blue:
-                return readReg(REG_BLUE)
-            default:
-                return 0
-        }
+        // switch (channel) {
+        //     case enRGB.Red:
+        //         return readReg(REG_RED)
+        //     case enRGB.Green:
+        //         return readReg(REG_GREEN)
+        //     case enRGB.Blue:
+        //         return readReg(REG_BLUE)
+        //     default:
+        //         return 0
+        // }
          
         // let r = readReg(REG_RED)
         // let g = readReg(REG_GREEN)
@@ -1031,6 +1067,19 @@ namespace FIFAbit {
         //     case enRGB.Blue: return nb
         //     default: return 0
         // }
+
+        updateRGB()
+
+        switch (channel) {
+            case enRGB.Red:
+                return cacheR
+            case enRGB.Green:
+                return cacheG
+            case enRGB.Blue:
+                return cacheB
+            default:
+                return 0
+        }
     }
 
     //% blockId=readWhiteValue
