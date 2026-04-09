@@ -183,8 +183,8 @@ namespace FIFAbit {
 
         // ⭐ 需要你实际测一下（很重要）
         const MAX_R = 6000
-        const MAX_G = 2500
-        const MAX_B = 2500
+        const MAX_G = 2700
+        const MAX_B = 2200
 
         let nr = Math.round(cacheR * 255 / MAX_R)
         let ng = Math.round(cacheG * 255 / MAX_G)
