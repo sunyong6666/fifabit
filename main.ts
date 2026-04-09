@@ -1,6 +1,5 @@
-const i2cAddress = 0x09;  // I2C设备地址
-
-// 运动类型
+// I2C设备地址
+let i2cAddress = 9
 enum motionType {
     //% block="forward"
     type1 = 1,
@@ -11,31 +10,24 @@ enum motionType {
     //% block="right"
     type4 = 4
 }
-// 运动类型()
 enum motionType1 {
     //% block="forward"
     type1 = 5,
     //% block="backward"
     type2 = 6
 }
-
-// 选择控制的电机
 enum motorID {
     //% block="0"
     motor0 = 0x50,
     //% block="1"
     motor1 = 0x6E
 }
-
-// 单电机运动方向
 enum motorDirection {
     //% block="forward"
     clockwise = 1,
     //% block="reverse"
     counterclockwise = 2
 }
-
-// 颜色
 enum enRGB {
     //% block="R"
     Red,
@@ -44,7 +36,6 @@ enum enRGB {
     //% block="B"
     Blue,
 }
-// 超声波
 enum Ultrasonic_pin {
     //% block="(P13,P0)"
     u1 = 13,
@@ -55,7 +46,6 @@ enum Ultrasonic_pin {
     //% block="(P15,P2)"
     u5 = 215
 }
-//单位
 enum PingUnit {
     //% block="centimeters"
     Centimeters,
@@ -64,7 +54,6 @@ enum PingUnit {
     //% block="inches"
     Inches
 }
-// io端口
 enum Write_pin {
     //% block="P0"
     w0 = 1,
@@ -79,7 +68,6 @@ enum Write_pin {
     //% block="P8"
     w5 = 6
 }
-//舵机端口
 enum ServoPin {
     //% block="P0"
     P0 = DigitalPin.P0,
@@ -98,14 +86,12 @@ enum ServoPin {
     //% block="P16"
     P16 = DigitalPin.P16
 }
-//转动方向
 enum RotationDirection {
     //% block="clockwise"
     Clockwise = 1,
     //% block="counterclockwise"
     Counterclockwise = -1
 }
-// 灯条预定义颜色
 enum Colors {
     //% block=红
     Red = 0xFF0000,
@@ -148,7 +134,6 @@ enum SensorSide {
     //% block="右"
     Right = 3
 }
-
 enum rocket {
     //% block="X"
     x = 1,
@@ -165,18 +150,13 @@ enum rock {
     //% block="right"
     orient4 = 3
 }
-
 enum DetectedColor {
     //% block="红色"
     Red,
-    //% block="橙色"
-    Orange,
     //% block="黄色"
     Yellow,
     //% block="绿色"
     Green,
-    //% block="青色"
-    Cyan,
     //% block="蓝色"
     Blue,
     //% block="紫色"
@@ -186,9 +166,6 @@ enum DetectedColor {
     //% block="黑色"
     Black
 }
-
-//color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
-//% color="#6CACE4" icon="\uf1e3" block="FIFA:bit"
 namespace FIFAbit {
     //#########################################################################
     //################################## 运动（双电机）#########################
@@ -218,35 +195,35 @@ namespace FIFAbit {
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     //% distance.min=0 distance.max=1000 distance.defl=10
     export function motionDistance(mtype: motionType1, mspeed: number, distance: number): void {
-        const spAddr = 0x8C + 0x01;//设置速度
-        let spBuff = pins.createBuffer(5);
-        spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
-        spBuff.setNumber(NumberFormat.UInt8BE, 1, (mspeed >> 8) & 0xFF);
-        spBuff.setNumber(NumberFormat.UInt8BE, 2, mspeed & 0xFF);
-        spBuff.setNumber(NumberFormat.UInt8BE, 3, (mspeed >> 8) & 0xFF);
-        spBuff.setNumber(NumberFormat.UInt8BE, 4, mspeed & 0xFF);
-        pins.i2cWriteBuffer(i2cAddress, spBuff);
+        const spAddr2 = 0x8C + 0x01;//设置速度
+        let spBuff2 = pins.createBuffer(5);
+        spBuff2.setNumber(NumberFormat.UInt8BE, 0, spAddr2);
+        spBuff2.setNumber(NumberFormat.UInt8BE, 1, (mspeed >> 8) & 0xFF);
+        spBuff2.setNumber(NumberFormat.UInt8BE, 2, mspeed & 0xFF);
+        spBuff2.setNumber(NumberFormat.UInt8BE, 3, (mspeed >> 8) & 0xFF);
+        spBuff2.setNumber(NumberFormat.UInt8BE, 4, mspeed & 0xFF);
+        pins.i2cWriteBuffer(i2cAddress, spBuff2);
         const disAddr = 0x8C + 0x02;//设置距离
         let disBuff = pins.createBuffer(3);
         disBuff.setNumber(NumberFormat.UInt8BE, 0, disAddr);
         disBuff.setNumber(NumberFormat.UInt8BE, 1, (distance >> 8) & 0xFF);
         disBuff.setNumber(NumberFormat.UInt8BE, 2, distance & 0xFF);
         pins.i2cWriteBuffer(i2cAddress, disBuff);
-        const regAddr = 0x8C + 0x00;//执行
-        let cmdBuff = pins.createBuffer(2);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, regAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, mtype);
-        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+        const regAddr2 = 0x8C + 0x00;//执行
+        let cmdBuff2 = pins.createBuffer(2);
+        cmdBuff2.setNumber(NumberFormat.UInt8BE, 0, regAddr2);
+        cmdBuff2.setNumber(NumberFormat.UInt8BE, 1, mtype);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff2);
     }
     //% blockId=motionStop
     //% block="stop motion"
     //% group="Motion" weight=1
     export function motionStop(): void {
-        const regAddr = 0x8C + 0x00;//执行
-        let cmdBuff = pins.createBuffer(2);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, regAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, 0);
-        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+        const regAddr3 = 0x8C + 0x00;//执行
+        let cmdBuff3 = pins.createBuffer(2);
+        cmdBuff3.setNumber(NumberFormat.UInt8BE, 0, regAddr3);
+        cmdBuff3.setNumber(NumberFormat.UInt8BE, 1, 0);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff3);
     }
     //#########################################################################
     //##################################单电机#################################
@@ -257,9 +234,9 @@ namespace FIFAbit {
     export function motorGetSpeed(mID: motorID): number {
         // 发送指令
         const cmdAddr = mID + 0x01;
-        let cmdBuff = pins.createBuffer(1);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+        let cmdBuff4 = pins.createBuffer(1);
+        cmdBuff4.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff4);
         // 拼接 2 字节为 16 位整数
         // let readBuff = pins.createBuffer(2);
         // readBuff = pins.i2cReadBuffer(i2cAddress, 2);
@@ -280,23 +257,23 @@ namespace FIFAbit {
     //% speed.min=0 speed.max=100 speed.defl=50
     export function motorSetSpeed(mID: motorID, speed: number): void {
         // 设置速度
-        const spAddr = mID + 0x04;
-        let spBuff = pins.createBuffer(3);
-        spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
-        spBuff.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF);
-        spBuff.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF);
-        pins.i2cWriteBuffer(i2cAddress, spBuff);
+        const spAddr3 = mID + 0x04;
+        let spBuff3 = pins.createBuffer(3);
+        spBuff3.setNumber(NumberFormat.UInt8BE, 0, spAddr3);
+        spBuff3.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF);
+        spBuff3.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF);
+        pins.i2cWriteBuffer(i2cAddress, spBuff3);
     }
     //% blockId=motorRun
     //% block="run motor %mID %direction"
     //% group="Motor" weight=7
     export function motorRun(mID: motorID, direction: motorDirection): void {
         // 发送运动指令
-        const cmdAddr = mID + 0x03;
-        let cmdBuff = pins.createBuffer(2);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction);
-        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+        const cmdAddr2 = mID + 0x03;
+        let cmdBuff5 = pins.createBuffer(2);
+        cmdBuff5.setNumber(NumberFormat.UInt8BE, 0, cmdAddr2);
+        cmdBuff5.setNumber(NumberFormat.UInt8BE, 1, direction);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff5);
     }
     //% blockId=motorRunDistance
     //% block="run motor %mID  %direction for %distance cm"
@@ -305,18 +282,18 @@ namespace FIFAbit {
     //% inlineInputMode = inline
     export function motorRunDistance(mID: motorID, direction: motorDirection, distance: number): void {
         //设置距离
-        const disAddr = mID + 0x07;
-        let disBuff = pins.createBuffer(3);
-        disBuff.setNumber(NumberFormat.UInt8BE, 0, disAddr);
-        disBuff.setNumber(NumberFormat.UInt8BE, 1, (distance >> 8) & 0xFF);
-        disBuff.setNumber(NumberFormat.UInt8BE, 2, distance & 0xFF);
-        pins.i2cWriteBuffer(i2cAddress, disBuff);
+        const disAddr2 = mID + 0x07;
+        let disBuff2 = pins.createBuffer(3);
+        disBuff2.setNumber(NumberFormat.UInt8BE, 0, disAddr2);
+        disBuff2.setNumber(NumberFormat.UInt8BE, 1, (distance >> 8) & 0xFF);
+        disBuff2.setNumber(NumberFormat.UInt8BE, 2, distance & 0xFF);
+        pins.i2cWriteBuffer(i2cAddress, disBuff2);
         // 发送运动指令
-        const cmdAddr = mID + 0x03;
-        let cmdBuff = pins.createBuffer(2);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction + 6);
-        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+        const cmdAddr3 = mID + 0x03;
+        let cmdBuff6 = pins.createBuffer(2);
+        cmdBuff6.setNumber(NumberFormat.UInt8BE, 0, cmdAddr3);
+        cmdBuff6.setNumber(NumberFormat.UInt8BE, 1, direction + 6);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff6);
     }
 
     //% blockId=motorRunAngle
@@ -326,18 +303,18 @@ namespace FIFAbit {
     //% inlineInputMode = inline
     export function motorRunAngle(mID: motorID, direction: motorDirection, angle: number): void {
         //设置偏移角度
-        const disAddr = mID + 0x06;
-        let disBuff = pins.createBuffer(3);
-        disBuff.setNumber(NumberFormat.UInt8BE, 0, disAddr);
-        disBuff.setNumber(NumberFormat.UInt8BE, 1, (angle >> 8) & 0xFF);
-        disBuff.setNumber(NumberFormat.UInt8BE, 2, angle & 0xFF);
-        pins.i2cWriteBuffer(i2cAddress, disBuff);
+        const disAddr3 = mID + 0x06;
+        let disBuff3 = pins.createBuffer(3);
+        disBuff3.setNumber(NumberFormat.UInt8BE, 0, disAddr3);
+        disBuff3.setNumber(NumberFormat.UInt8BE, 1, (angle >> 8) & 0xFF);
+        disBuff3.setNumber(NumberFormat.UInt8BE, 2, angle & 0xFF);
+        pins.i2cWriteBuffer(i2cAddress, disBuff3);
         // 发送运动指令
-        const cmdAddr = mID + 0x03;
-        let cmdBuff = pins.createBuffer(2);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction + 4);
-        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+        const cmdAddr4 = mID + 0x03;
+        let cmdBuff7 = pins.createBuffer(2);
+        cmdBuff7.setNumber(NumberFormat.UInt8BE, 0, cmdAddr4);
+        cmdBuff7.setNumber(NumberFormat.UInt8BE, 1, direction + 4);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff7);
     }
 
     //% blockId=motorRunSpeed
@@ -346,29 +323,29 @@ namespace FIFAbit {
     //% speed.min=0 speed.max=100 speed.defl=50
     export function motorRunSpeed(mID: motorID, direction: motorDirection, speed: number): void {
         // 设置速度
-        const spAddr = mID + 0x04;
-        let spBuff = pins.createBuffer(3);
-        spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
-        spBuff.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF);
-        spBuff.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF);
-        pins.i2cWriteBuffer(i2cAddress, spBuff);
+        const spAddr4 = mID + 0x04;
+        let spBuff4 = pins.createBuffer(3);
+        spBuff4.setNumber(NumberFormat.UInt8BE, 0, spAddr4);
+        spBuff4.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF);
+        spBuff4.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF);
+        pins.i2cWriteBuffer(i2cAddress, spBuff4);
         // 发送运动指令
-        const cmdAddr = mID + 0x03;
-        let cmdBuff = pins.createBuffer(2);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction);
-        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+        const cmdAddr5 = mID + 0x03;
+        let cmdBuff8 = pins.createBuffer(2);
+        cmdBuff8.setNumber(NumberFormat.UInt8BE, 0, cmdAddr5);
+        cmdBuff8.setNumber(NumberFormat.UInt8BE, 1, direction);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff8);
     }
     //% blockId=motorStop
     //% block="stop motor %mID"
     //% group="Motor" weight=3
     export function motorStop(mID: motorID): void {
         // 发送停止运动指令
-        const cmdAddr = mID + 0x03;
-        let cmdBuff = pins.createBuffer(2);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, 0);
-        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+        const cmdAddr6 = mID + 0x03;
+        let cmdBuff9 = pins.createBuffer(2);
+        cmdBuff9.setNumber(NumberFormat.UInt8BE, 0, cmdAddr6);
+        cmdBuff9.setNumber(NumberFormat.UInt8BE, 1, 0);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff9);
     }
 
     //#########################################################################
@@ -532,8 +509,8 @@ namespace FIFAbit {
     //% group="LED" weight=7
     export function setAllColor(color: Colors): void {
         if (currentStrip) {
-            for (let i = 0; i < currentLEDCount; i++) {
-                currentStrip.setPixelColor(i, color)
+            for (let j = 0; j < currentLEDCount; j++) {
+                currentStrip.setPixelColor(j, color)
             }
             currentStrip.show()
         }
@@ -548,8 +525,8 @@ namespace FIFAbit {
     export function setAllRGB(red: number, green: number, blue: number): void {
         if (currentStrip) {
             let rgb = (red << 16) | (green << 8) | blue
-            for (let i = 0; i < currentLEDCount; i++) {
-                currentStrip.setPixelColor(i, rgb)
+            for (let k = 0; k < currentLEDCount; k++) {
+                currentStrip.setPixelColor(k, rgb)
             }
             currentStrip.show()
         }
@@ -576,8 +553,8 @@ namespace FIFAbit {
     //% group="LED" weight=4
     export function setLEDRGB(index: number, red: number, green: number, blue: number): void {
         if (currentStrip && index >= 0 && index < currentLEDCount) {
-            let rgb = (red << 16) | (green << 8) | blue
-            currentStrip.setPixelColor(index, rgb)
+            let rgb2 = (red << 16) | (green << 8) | blue
+            currentStrip.setPixelColor(index, rgb2)
             currentStrip.show()
         }
     }
@@ -643,8 +620,8 @@ namespace FIFAbit {
         writeCmd(0x80 | address)
 
         // 显示文本
-        for (let i = 0; i < text.length && i < 16; i++) {
-            writeData(text.charCodeAt(i))
+        for (let l = 0; l < text.length && l < 16; l++) {
+            writeData(text.charCodeAt(l))
         }
     }
 
@@ -673,11 +650,11 @@ namespace FIFAbit {
     }
 
     function writeData(data: number): void {
-        let high = data & 0xF0
-        let low = (data << 4) & 0xF0
+        let high2 = data & 0xF0
+        let low2 = (data << 4) & 0xF0
 
-        write4bits(high | 0x01)  // RS=1
-        write4bits(low | 0x01)   // RS=1
+        write4bits(high2 | 0x01)  // RS=1
+        write4bits(low2 | 0x01)   // RS=1
     }
 
     function write4bits(data: number): void {
@@ -738,14 +715,14 @@ namespace FIFAbit {
     //% group="Soil Moisture Sensor" weight=88
     export function readPercentageTR(pin: PotPin): number {
         // 读取原始值
-        let rawValue = pins.analogReadPin(pin as number)
+        let rawValue2 = pins.analogReadPin(pin as number)
 
         // 转换为百分比 0-100
-        let percentage = (rawValue * 100) / 1023
+        let percentage2 = (rawValue2 * 100) / 1023
 
         // 确保在0-100范围内
-        percentage = Math.min(100, Math.max(0, percentage))
-        return Math.round(percentage)
+        percentage2 = Math.min(100, Math.max(0, percentage2))
+        return Math.round(percentage2)
     }
 
     //----------------------------------按键-------------------------------
@@ -846,8 +823,8 @@ namespace FIFAbit {
     //% group="Line Tracking Sensor" weight=57
     export function readSensorValue(position: SensorSide): number {
         if (!line_isInitialized) return 0
-        let pin = pinMap[position]
-        return pins.digitalReadPin(pin)
+        let pin2 = pinMap[position]
+        return pins.digitalReadPin(pin2)
     }
 
     //----------------------------------摇杆-------------------------------
@@ -943,36 +920,89 @@ namespace FIFAbit {
         return data[0] | (data[1] << 8)
     }
 
-    //判断颜色
-    export function getColor(): DetectedColor {
-        let r = readReg(REG_RED)
-        let g = readReg(REG_GREEN)
-        let b = readReg(REG_BLUE)
+    let cacheR = 0
+    let cacheG = 0
+    let cacheB = 0
+    let cacheW = 0
+
+    let lastReadTime = 0
+    const READ_INTERVAL = 320
+
+    function updateRGB() {
+
+        if (!veml_initialized) {
+            init_veml()
+        }
+
+        let now = control.millis()
+
+        // 控制读取频率
+        if (now - lastReadTime < READ_INTERVAL) return
+
+        let s = readReg(REG_RED)
+        let h = readReg(REG_GREEN)
+        let c = readReg(REG_BLUE)
         let w = readReg(REG_WHITE)
 
-        let sum = r + g + b
+        // 防止异常值
+        if (s == 0 && h == 0 && c == 0 && w == 0) return
 
-        if (sum == 0) return DetectedColor.Black
+        cacheR = s
+        cacheG = h
+        cacheB = c
+        cacheW = w
+        serial.writeLine("R=" + s + " G=" + h + " B=" + c + " W=" + w)
 
-        let nr = r / sum
-        let ng = g / sum
-        let nb = b / sum
+        lastReadTime = now
+    }
 
-        // 黑 / 白 优先判断
-        if (w < 50) return DetectedColor.Black
-        if (w > 2000 && Math.abs(r - g) < 200 && Math.abs(g - b) < 200)
+    //判断颜色
+    export function getColor(): DetectedColor {
+
+        updateRGB()
+
+        let t = cacheR
+        let m = cacheG
+        let d = cacheB
+        let a = cacheW
+
+        // ===== 黑 / 白 优先 =====
+        if (a < 50) return DetectedColor.Black
+
+        if (a > 2000 && Math.abs(t - m) < 200 && Math.abs(m - d) < 200) {
             return DetectedColor.White
+        }
 
-        // 颜色判断
-        if (nr > 0.6 && ng < 0.3 && nb < 0.3) return DetectedColor.Red
-        if (nr > 0.5 && ng > 0.3 && nb < 0.2) return DetectedColor.Orange
-        if (nr > 0.4 && ng > 0.4 && nb < 0.2) return DetectedColor.Yellow
-        if (ng > 0.6 && nr < 0.3 && nb < 0.3) return DetectedColor.Green
-        if (ng > 0.4 && nb > 0.4) return DetectedColor.Cyan
-        if (nb > 0.6 && nr < 0.3) return DetectedColor.Blue
-        if (nr > 0.4 && nb > 0.4) return DetectedColor.Purple
+        let rgb3 = [t, m, d]
 
-        return DetectedColor.White
+        let minDist = 999999
+        let result = DetectedColor.White
+
+        // ⭐ 样本（你可以自己调）
+        let samples: { color: DetectedColor, rgb: number[] }[] = [
+            { color: DetectedColor.Red, rgb: [5000, 2000, 1000] },
+            { color: DetectedColor.Green, rgb: [6000, 5000, 2000] },
+            { color: DetectedColor.Blue, rgb: [3000, 3000, 2000] },
+            { color: DetectedColor.Yellow, rgb: [4000, 4000, 500] },
+            { color: DetectedColor.Purple, rgb: [3000, 800, 3000] }
+
+        ]
+
+        for (let u of samples) {
+
+            let dr = t - u.rgb[0]
+            let dg = m - u.rgb[1]
+            let db = d - u.rgb[2]
+
+            let dist = Math.sqrt(dr * dr + dg * dg + db * db)
+
+            if (dist < minDist) {
+                minDist = dist
+                result = u.color
+            }
+        }
+
+        return result
     }
 
     //% blockId=init_veml
@@ -987,102 +1017,29 @@ namespace FIFAbit {
         }
     }
 
-
-    let cacheR = 0
-    let cacheG = 0
-    let cacheB = 0
-    let cacheW = 0
-
-    let lastReadTime = 0
-    const READ_INTERVAL = 320  // ⭐ 推荐 80~150ms
-
-    function updateRGB() {
-
-        if (!veml_initialized) {
-            init_veml()
-        }
-
-        let now = control.millis()
-
-        // ⭐ 控制读取频率（关键）
-        if (now - lastReadTime < READ_INTERVAL) return
-
-        let r = readReg(REG_RED)
-        let g = readReg(REG_GREEN)
-        let b = readReg(REG_BLUE)
-        let w = readReg(REG_WHITE)
-
-        // ⭐ 防止异常值
-        if (r == 0 && g == 0 && b == 0 && w == 0) return
-
-        cacheR = r
-        cacheG = g
-        cacheB = b
-        cacheW = w
-
-        lastReadTime = now
-    }
-
     //% blockId=isColorDetected
     //% block="识别到颜色 %color"
     //% group="Color Sensor" weight=38
-    export function isColorDetected(color: DetectedColor): boolean {
-        return getColor() == color
-    }
+    // export function isColorDetected(color: DetectedColor): boolean {
+    //     return getColor() == color
+    // }
 
     //% blockId=readRGBValue
     //% block="读取 %channel 值"
     //% group="Color Sensor" weight=37
     export function readRGBValue(channel: enRGB): number {
-        // switch (channel) {
-        //     case enRGB.Red:
-        //         return readReg(REG_RED)
-        //     case enRGB.Green:
-        //         return readReg(REG_GREEN)
-        //     case enRGB.Blue:
-        //         return readReg(REG_BLUE)
-        //     default:
-        //         return 0
-        // }
-         
-        // let r = readReg(REG_RED)
-        // let g = readReg(REG_GREEN)
-        // let b = readReg(REG_BLUE)
-        // let w = readReg(REG_WHITE)
-
-        // if (w == 0) return 0
-
-        // let nr = Math.round(r * 255 / w)
-        // let ng = Math.round(g * 255 / w)
-        // let nb = Math.round(b * 255 / w)
-
-        // // 限制范围（非常重要）
-        // if (nr > 255) nr = 255
-        // if (ng > 255) ng = 255
-        // if (nb > 255) nb = 255
-
-        // switch (channel) {
-        //     case enRGB.Red: return nr
-        //     case enRGB.Green: return ng
-        //     case enRGB.Blue: return nb
-        //     default: return 0
-        // }
-
         updateRGB()
 
-        let r = cacheR
-        let g = cacheG
-        let b = cacheB
+        // ⭐ 需要你实际测一下（很重要）
+        const MAX_R = 6000
+        const MAX_G = 3000
+        const MAX_B = 2000
 
-        let sum = r + g + b
+        let nr = Math.round(cacheR * 255 / MAX_R)
+        let ng = Math.round(cacheG * 255 / MAX_G)
+        let nb = Math.round(cacheB * 255 / MAX_B)
 
-        if (sum <= 0) return 0
-
-        let nr = Math.round(r * 255 / sum)
-        let ng = Math.round(g * 255 / sum)
-        let nb = Math.round(b * 255 / sum)
-
-        // ⭐ 限制范围（必须）
+        // 限制范围
         if (nr > 255) nr = 255
         if (ng > 255) ng = 255
         if (nb > 255) nb = 255
@@ -1093,13 +1050,21 @@ namespace FIFAbit {
             case enRGB.Blue: return nb
             default: return 0
         }
+        
     }
 
     //% blockId=readWhiteValue
     //% block="读取亮度值"
     //% group="Color Sensor" weight=36
     export function readWhiteValue(): number {
-        return readReg(REG_WHITE)
+        updateRGB()
+
+        let nw = Math.round(cacheW * 255 / 65535)
+
+        if (nw > 255) nw = 255
+        if (nw < 0) nw = 0
+
+        return nw
     }
 
 }
