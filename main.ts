@@ -131,14 +131,7 @@ enum PotPin {
     //% block="P10"
     P10 = AnalogPin.P10
 }
-enum SensorSide {
-    //% block="左"
-    Left = 1,
-    //% block="中"
-    Middle = 2,
-    //% block="右"
-    Right = 3
-}
+
 
 enum rocket {
     //% block="X"

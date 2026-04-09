@@ -18,6 +18,15 @@ enum LineSensorPin {
     P16 = DigitalPin.P16
 }
 
+enum SensorSide {
+    //% block="左"
+    Left = 1,
+    //% block="中"
+    Middle = 2,
+    //% block="右"
+    Right = 3
+}
+
 namespace FIFAbit {
     // 存储三个传感器的引脚
     let leftPin: LineSensorPin
