@@ -139,7 +139,7 @@ namespace FIFAbit {
         let ng = (g / w) * GAIN_G
         let nb = (b / w) * GAIN_B
 
-        // ===== 再归一化（关键）=====
+        // ===== 再归一化=====
         let sum = nr + ng + nb
         nr /= sum
         ng /= sum
@@ -171,9 +171,9 @@ namespace FIFAbit {
 
         if (h < 0) h += 360
 
-        serial.writeLine("H=" + h + " S=" + s)
+        //serial.writeLine("H=" + h + " S=" + s)
 
-        // ===== 分类（修正区间判断）=====
+        // ===== 分类（区间判断）=====
         if (color == DetectedColor.Red){
             if (h < 10 || h >= 340) return true
             return false

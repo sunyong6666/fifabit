@@ -10,6 +10,8 @@
     "motionType.type4|block": "右转",
     "motionType1.type1|block": "前进",
     "motionType1.type2|block": "后退",
+    "motionType2.type1|block": "左转",
+    "motionType2.type2|block": "右转",
     "motorDirection.clockwise|block": "正转",
     "motorDirection.counterclockwise|block": "反转",
     "PingUnit.Centimeters|block": "厘米",
@@ -18,6 +20,7 @@
 
     "FIFAbit.motionSpeed|block": "%mtype 速度 %mspeed",
     "FIFAbit.motionDistance|block": "%mtype 速度 %mspeed 距离 %distance 厘米",
+    "FIFAbit.motionAngle|block": "%mtype 速度 %mspeed 角度 %distance °",
     "FIFAbit.motionStop|block": "停止运动",
     "FIFAbit.motorGetSpeed|block": "获取电机 %mID 速度",
     "FIFAbit.motorSetSpeed|block": "设置电机 %mID 速度为 %speed",
