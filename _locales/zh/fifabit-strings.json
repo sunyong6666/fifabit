@@ -1,7 +1,5 @@
 
 {
-    "{id:group}Sensor": "传感器",
-
     "motionType.type1|block": "前进",
     "motionType.type2|block": "后退",
     "motionType.type3|block": "左转",
@@ -12,6 +10,9 @@
     "motionType2.type2|block": "右转",
     "motorDirection.clockwise|block": "正转",
     "motorDirection.counterclockwise|block": "反转",
+    "RotationDirection.Clockwise|block": "顺时针",
+    "RotationDirection.Counterclockwise|block": "逆时针",
+    
 
     "{id:group}Motion": "运动",
     "FIFAbit.motionSpeed|block": "%mtype 速度 %mspeed",
@@ -26,6 +27,16 @@
     "FIFAbit.motorRunDistance|block": "电机 %mID %direction 运行 %distance 厘米",
     "FIFAbit.motorRunAngle|block": "电机 %mID %direction 转动 %angle 度",
     "FIFAbit.motorRunSpeed|block": "电机 %mID %direction 速度 %speed运行",
-    "FIFAbit.motorStop|block": "电机 %mID 停止"
+    "FIFAbit.motorStop|block": "电机 %mID 停止",
+
+    "{id:group}Servo Motor": "舵机",
+    "servo1Set|block": "设置180舵机 %pin 角度为 %value °",
+    "servo1Stop|block": "停止180舵机 %pin",
+    "servo360_run|block": "360舵机 %pin 以速度 %speed %direction 转动",
+    "servo360_run_with_duration|block": "360舵机 %pin 以速度 %speed %direction |转动 %duration 秒",
+    "servo360_stop|block": "停止360舵机 %pin",
+    
+    
  
+    "{id:group}Sensor": "传感器"
 }

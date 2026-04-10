@@ -334,7 +334,7 @@ namespace FIFAbit {
     //#########################################################################
 
     //% blockId=servo1Set
-    //% block="设置180舵机 %pin 角度为 %value °"
+    //% block="set 180° servo %pin to %value °"
     //% value.min=0 value.max=180 value.defl=90
     //% group="Servo Motor" weight=9
     export function servo1Set(pin: ServoPin, value: number): void {
@@ -342,14 +342,14 @@ namespace FIFAbit {
     }
 
     //% blockId=servo1Stop
-    //% block="停止180舵机 %servoPin"
+    //% block="stop 180° servo %pin"
     //% group="Servo Motor" weight=6
-    export function servo1Stop(servoPin: ServoPin): void {
-        pins.digitalWritePin(servoPin, 0)
+    export function servo1Stop(pin: ServoPin): void {
+        pins.digitalWritePin(pin, 0)
     }
 
     //% blockId=servo360_run
-    //% block="360舵机%pin 速度 %speed %direction 转动"
+    //% block="run 360° servo %pin at speed %speed %direction"
     //% speed.min=0 speed.max=100 speed.defl=50
     //% group="Servo Motor" weight=5
     export function runServo360(pin: ServoPin, speed: number, direction: RotationDirection ): void {
@@ -379,7 +379,8 @@ namespace FIFAbit {
         pins.servoSetPulse(pin, pulseWidth)
     }
     //% blockId=servo360_run_with_duration
-    //% block="360舵机%pin 速度 %speed %direction 转动 %duration 秒"
+    //% block="run 360° servo %pin at speed %speed %direction|for %duration s"
+    //% inlineInputMode=external
     //% speed.min=0 speed.max=100 speed.defl=50
     //% duration.min=0 duration.max=100 duration.defl=1
     //% group="Servo Motor" weight=4
@@ -395,7 +396,7 @@ namespace FIFAbit {
     }
 
     //% blockId=servo360_stop
-    //% block="停止360舵机%pin"
+    //% block="stop 360° servo %pin"
     //% group="Servo Motor" weight=3
     export function stopServo360(pin: ServoPin): void {
         // 设置脉冲宽度为1.5ms停止
