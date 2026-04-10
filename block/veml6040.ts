@@ -1,7 +1,8 @@
 //----------------------------------颜色传感器-------------------------------
-const GAIN_R = 0.92
-const GAIN_G = 0.94
-const GAIN_B = 1.82
+const GAIN_R = 0.93
+const GAIN_G = 0.95
+const GAIN_B = 1.81
+
 enum DetectedColor {
     //% block="红色"
     Red,
@@ -17,10 +18,10 @@ enum DetectedColor {
     Blue,
     //% block="紫色"
     Purple,
-    //% block="白色"
-    White,
-    //% block="黑色"
-    Black
+    // //% block="白色"
+    // White,
+    // //% block="黑色"
+    // Black
 }
 
 // 颜色
@@ -83,7 +84,6 @@ namespace FIFAbit {
     const READ_INTERVAL = 320
 
     function updateRGB() {
-
         if (!veml_initialized) {
             init_veml()
         }
@@ -110,58 +110,6 @@ namespace FIFAbit {
         lastReadTime = now
     }
 
-    //判断颜色（无作用）
-    // export function getColor(): DetectedColor {
-    //     updateRGB()
-
-    //     let t = cacheR
-    //     let m = cacheG
-    //     let d = cacheB
-    //     let a = cacheW
-
-    //     // ===== 黑 / 白 优先 =====
-    //     if (a < 50) return DetectedColor.Black
-
-    //     if (a > 2000 && Math.abs(t - m) < 200 && Math.abs(m - d) < 200) {
-    //         return DetectedColor.White
-    //     }
-
-    //     let rgb3 = [t, m, d]
-
-    //     let minDist = 999999
-    //     let result = DetectedColor.White
-
-    //     // ⭐ 样本（你可以自己调）
-    //     let samples: { color: DetectedColor, rgb: number[] }[] = [
-    //         { color: DetectedColor.Red, rgb: [5000, 2000, 1000] },
-    //         { color: DetectedColor.Green, rgb: [6000, 5000, 2000] },
-    //         { color: DetectedColor.Blue, rgb: [3000, 3000, 2000] },
-    //         { color: DetectedColor.Yellow, rgb: [4000, 4000, 500] },
-    //         { color: DetectedColor.Purple, rgb: [3000, 800, 3000] }
-
-    //     ]
-
-    //     for (let u of samples) {
-
-    //         let dr = t - u.rgb[0]
-    //         let dg = m - u.rgb[1]
-    //         let db = d - u.rgb[2]
-
-    //         let dist = Math.sqrt(dr * dr + dg * dg + db * db)
-
-    //         if (dist < minDist) {
-    //             minDist = dist
-    //             result = u.color
-    //         }
-    //     }
-
-    //     return result
-    // }
-
-    
-
-    
-    
 
     //% blockId=init_veml
     //% block="init VEML6040"
@@ -178,15 +126,83 @@ namespace FIFAbit {
     //% blockId=isColorDetected
     //% block="识别到颜色 %color"
     //% group="Color Sensor" weight=38
-    // export function isColorDetected(color: DetectedColor): boolean {
-    //     return getColor() == color
-    // }
+    export function isColorDetected(color: DetectedColor): boolean {
+        updateRGB()
+
+        let r = cacheR
+        let g = cacheG
+        let b = cacheB
+        let w = cacheW
+
+        // ===== 增益 + 白光归一化 =====
+        let nr = (r / w) * GAIN_R
+        let ng = (g / w) * GAIN_G
+        let nb = (b / w) * GAIN_B
+
+        // ===== 再归一化（关键）=====
+        let sum = nr + ng + nb
+        nr /= sum
+        ng /= sum
+        nb /= sum
+
+        // ===== 计算 max/min =====
+        let max = max3(nr, ng, nb)
+        let min = min3(nr, ng, nb)
+
+        // ===== 饱和度 =====
+        let s = (max - min) / max
+        //serial.writeLine(s + "")
+        if (s < 0.1) {
+            //此为白
+            //serial.writeLine("b2")
+            return false 
+        }
+
+        // ===== Hue =====
+        let h = 0
+
+        if (max == nr) {
+            h = 60 * ((ng - nb) / (max - min))
+        } else if (max == ng) {
+            h = 60 * (2 + (nb - nr) / (max - min))
+        } else {
+            h = 60 * (4 + (nr - ng) / (max - min))
+        }
+
+        if (h < 0) h += 360
+
+        //serial.writeLine("H=" + h + " S=" + s)
+
+        // ===== 分类（修正区间判断）=====
+        if (color == DetectedColor.Red){
+            if (h < 10 || h >= 340) return true
+            return false
+        }else if (color == DetectedColor.Orange){
+            if (h >= 15 && h < 50) return true
+            return false
+        } else if (color == DetectedColor.Yellow) {
+            if (h >= 50 && h < 70) return true
+            return false
+        } else if (color == DetectedColor.Green) {
+            if (h >= 70 && h < 130) return true
+            return false
+        } else if (color == DetectedColor.Cyan) {
+            if (h >= 160 && h < 210) return true
+            return false
+        } else if (color == DetectedColor.Blue) {
+            if (h >= 210 && h < 240) return true
+            return false
+        } else if (color == DetectedColor.Purple) {
+            if (h >= 265 && h < 295) return true
+            return false
+        }
+        return false
+    }
     
     //% blockId=readRGBValue
     //% block="读取 %channel 值"
     //% group="Color Sensor" weight=37
     export function readRGBValue(channel: enRGB): number {
-
         updateRGB()
 
         if (cacheW == 0) return 0
@@ -216,32 +232,6 @@ namespace FIFAbit {
             case enRGB.Blue: return nb
             default: return 0
         }
-
-        
-
-         // updateRGB()
-
-        // // ⭐ 需要你实际测一下（很重要）
-        // const MAX_R = 6000
-        // const MAX_G = 2600
-        // const MAX_B = 2200
-
-        // let nr = Math.round(cacheR * 255 / MAX_R)
-        // let ng = Math.round(cacheG * 255 / MAX_G)
-        // let nb = Math.round(cacheB * 255 / MAX_B)
-
-        // // 限制范围
-        // if (nr > 255) nr = 255
-        // if (ng > 255) ng = 255
-        // if (nb > 255) nb = 255
-
-        // switch (channel) {
-        //     case enRGB.Red: return nr
-        //     case enRGB.Green: return ng
-        //     case enRGB.Blue: return nb
-        //     default: return 0
-        // }
-
     }
 
     //% blockId=readWhiteValue
@@ -271,58 +261,5 @@ namespace FIFAbit {
         if (c < m) m = c
         return m
     }
-
-    // ===== ⭐ 学习阶段（前50次）=====
-    // if (learnCount < 50) {
-    //     learnR += r
-    //     learnG += g
-    //     learnB += b
-    //     learnCount++
-
-    //     serial.writeLine("Learning... " + learnCount)
-    //     return 0
-    // }
-
-    // // ===== ⭐ 计算平均值 =====
-    // let avgR = learnR / learnCount
-    // let avgG = learnG / learnCount
-    // let avgB = learnB / learnCount
-
-    // // ===== ⭐ 计算增益 =====
-    // let gainR = 1 / avgR
-    // let gainG = 1 / avgG
-    // let gainB = 1 / avgB
-
-    // // ===== ⭐ 应用增益 =====
-    // r *= gainR
-    // g *= gainG
-    // b *= gainB
-
-    // // ===== 归一到最大值（避免溢出）=====
-    // let max = max3(r, g, b)
-    // if (max > 0) {
-    //     r /= max
-    //     g /= max
-    //     b /= max
-    // }
-
-    // // ===== 转 0~255 =====
-    // let nr = Math.round(r * 255)
-    // let ng = Math.round(g * 255)
-    // let nb = Math.round(b * 255)
-
-    // // ===== 打印结果（关键）=====
-    // serial.writeLine(
-    //     "GAIN R=" + gainR +
-    //     " G=" + gainG +
-    //     " B=" + gainB
-    // )
-
-    // switch (channel) {
-    //     case enRGB.Red: return nr
-    //     case enRGB.Green: return ng
-    //     case enRGB.Blue: return nb
-    //     default: return 0
-    // }
 }
 
