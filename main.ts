@@ -11,12 +11,19 @@ enum motionType {
     //% block="right"
     type4 = 4
 }
-// 运动类型()
+// 运动类型(前后)
 enum motionType1 {
     //% block="forward"
     type1 = 5,
     //% block="backward"
     type2 = 6
+}
+// 运动类型(左右)
+enum motionType2 {
+    //% block="left"
+    type1 = 9,
+    //% block="right"
+    type2 = 10
 }
 
 // 选择控制的电机
@@ -163,6 +170,32 @@ namespace FIFAbit {
         cmdBuff.setNumber(NumberFormat.UInt8BE, 1, mtype);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
+    //% blockId=motionAngle
+    //% block="move %mtype at speed %mspeed for %angle °"
+    //% group="Motion" weight=1
+    //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
+    //% angle.min=0 angle.max=1000 distance.defl=90
+    export function motionAngle(mtype: motionType2, mspeed: number, angle: number): void {
+        const spAddr = 0x8C + 0x01;//设置速度
+        let spBuff = pins.createBuffer(5);
+        spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
+        spBuff.setNumber(NumberFormat.UInt8BE, 1, (mspeed >> 8) & 0xFF);
+        spBuff.setNumber(NumberFormat.UInt8BE, 2, mspeed & 0xFF);
+        spBuff.setNumber(NumberFormat.UInt8BE, 3, (mspeed >> 8) & 0xFF);
+        spBuff.setNumber(NumberFormat.UInt8BE, 4, mspeed & 0xFF);
+        pins.i2cWriteBuffer(i2cAddress, spBuff);
+        const disAddr = 0x8C + 0x04;//设置角度
+        let disBuff = pins.createBuffer(3);
+        disBuff.setNumber(NumberFormat.UInt8BE, 0, disAddr);
+        disBuff.setNumber(NumberFormat.UInt8BE, 1, (angle >> 8) & 0xFF);
+        disBuff.setNumber(NumberFormat.UInt8BE, 2, angle & 0xFF);
+        pins.i2cWriteBuffer(i2cAddress, disBuff);
+        const regAddr = 0x8C + 0x00;//执行
+        let cmdBuff = pins.createBuffer(2);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, regAddr);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, mtype);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+    }
     //% blockId=motionStop
     //% block="stop motion"
     //% group="Motion" weight=1
@@ -245,7 +278,7 @@ namespace FIFAbit {
     }
 
     //% blockId=motorRunAngle
-    //% block="run motor %mID  %direction %angle degrees"
+    //% block="run motor %mID  %direction %angle °"
     //% group="Motor" weight=5
     //% angle.min=0 angle.max=3600 angle.defl=90
     //% inlineInputMode = inline
