@@ -174,7 +174,7 @@ namespace FIFAbit {
     //% block="move %mtype at speed %mspeed for %angle °"
     //% group="Motion" weight=7
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
-    //% angle.min=0 angle.max=1000 distance.defl=90
+    //% angle.min=0 angle.max=1000 angle.defl=90
     export function motionAngle(mtype: motionType2, mspeed: number, angle: number): void {
         const spAddr = 0x8C + 0x01;//设置速度
         let spBuff = pins.createBuffer(5);
