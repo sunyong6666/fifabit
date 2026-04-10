@@ -193,7 +193,7 @@ namespace FIFAbit {
             if (h >= 210 && h < 240) return true
             return false
         } else if (color == DetectedColor.Purple) {
-            if (h >= 265 && h < 295) return true
+            if (h >= 255 && h < 295) return true
             return false
         }
         return false

@@ -35,42 +35,7 @@ enum motorDirection {
     counterclockwise = 2
 }
 
-// 超声波
-enum Ultrasonic_pin {
-    //% block="(P13,P0)"
-    u1 = 13,
-    //% block="(P14,P1)"
-    u3 = 114,
-    //% block="(P9,P12)"
-    u4 = 129,
-    //% block="(P15,P2)"
-    u5 = 215
-}
-//单位
-enum PingUnit {
-    //% block="centimeters"
-    Centimeters,
-    //% block="microseconds"
-    MicroSeconds,
-    //% block="inches"
-    Inches
-}
-// io端口
-enum Write_pin {
-    //% block="P0"
-    w0 = 1,
-    //% block="P16"
-    w1 = 2,
-    //% block="P1"
-    w2 = 3,
-    //% block="P12"
-    w3 = 4,
-    //% block="P2"
-    w4 = 5,
-    //% block="P8"
-    w5 = 6
-}
-//舵机端口(所有数字引脚都使用的此下拉)
+//舵机端口
 enum ServoPin {
     //% block="P0"
     P0 = DigitalPin.P0,
@@ -96,6 +61,7 @@ enum RotationDirection {
     //% block="counterclockwise"
     Counterclockwise = -1
 }
+
 // 灯条预定义颜色
 enum Colors {
     //% block=红
@@ -117,21 +83,15 @@ enum Colors {
     //% block=黑
     Off = 0x000000
 }
+
 enum PotPin {
     //% block="P0"
     P0 = AnalogPin.P0,
     //% block="P1"
     P1 = AnalogPin.P1,
     //% block="P2"
-    P2 = AnalogPin.P2,
-    //% block="P3"
-    P3 = AnalogPin.P3,
-    //% block="P4"
-    P4 = AnalogPin.P4,
-    //% block="P10"
-    P10 = AnalogPin.P10
+    P2 = AnalogPin.P2
 }
-
 
 enum rocket {
     //% block="X"
@@ -403,7 +363,7 @@ namespace FIFAbit {
 
     //% blockId=servo360_stop
     //% block="停止360舵机%pin"
-    //% group=""Servo Motor" weight=3
+    //% group="Servo Motor" weight=3
     export function stopServo360(pin: ServoPin): void {
         // 设置脉冲宽度为1.5ms停止
         pins.servoSetPulse(pin, 1500)
@@ -417,15 +377,13 @@ namespace FIFAbit {
         private buffer: Buffer
         private pin: DigitalPin
         private length: number
-        private brightness: number = 255
+        private brightness: number = 128
 
         constructor(pin: DigitalPin, length: number) {
             this.pin = pin
             this.length = length
-            // 每个LED需要3个字节 (RGB)
-            this.buffer = pins.createBuffer(length * 3)
-            // 初始化引脚
-            pins.digitalWritePin(pin, 0)
+            this.buffer = pins.createBuffer(length * 3)// 每个LED需要3个字节 (RGB)
+            pins.digitalWritePin(pin, 0)// 初始化引脚
         }
 
         // 设置单个LED的RGB颜色
@@ -452,7 +410,6 @@ namespace FIFAbit {
 
         // 显示所有LED
         show(): void {
-            // 使用ws2812b库发送数据
             ws2812b.sendBuffer(this.buffer, this.pin)
         }
 
@@ -469,7 +426,7 @@ namespace FIFAbit {
         }
     }
 
-    // 全局变量存储当前灯条
+    // 全局变量存储当前灯条信息
     let currentStrip: WS2812BStrip
     let currentLEDCount: number = 8
 
