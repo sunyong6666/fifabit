@@ -102,7 +102,7 @@ namespace FIFAbit {
         cacheG = h
         cacheB = c
         cacheW = w
-        //serial.writeLine("R=" + s + " G=" + h + " B=" + c + " W=" + w)
+        serial.writeLine("R=" + s + " G=" + h + " B=" + c + " W=" + w)
 
         lastReadTime = now
     }

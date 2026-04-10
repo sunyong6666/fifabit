@@ -356,7 +356,7 @@ namespace FIFAbit {
     }
 
     //% blockId=servo360_run
-    //% block="360舵机 %pin 以速度 %speed %direction 转动"
+    //% block="360舵机%pin 速度 %speed %direction 转动"
     //% speed.min=0 speed.max=100 speed.defl=50
     //% group="Servo Motor" weight=5
     export function runServo360(pin: ServoPin, speed: number, direction: RotationDirection ): void {
@@ -386,7 +386,7 @@ namespace FIFAbit {
         pins.servoSetPulse(pin, pulseWidth)
     }
     //% blockId=servo360_run_with_duration
-    //% block="360舵机 %pin 以速度 %speed %direction 转动 %duration 秒"
+    //% block="360舵机%pin 速度 %speed %direction 转动 %duration 秒"
     //% speed.min=0 speed.max=100 speed.defl=50
     //% duration.min=0 duration.max=100 duration.defl=1
     //% group="Servo Motor" weight=4
@@ -402,7 +402,7 @@ namespace FIFAbit {
     }
 
     //% blockId=servo360_stop
-    //% block="停止360舵机 %pin"
+    //% block="停止360舵机%pin"
     //% group=""Servo Motor" weight=3
     export function stopServo360(pin: ServoPin): void {
         // 设置脉冲宽度为1.5ms停止
