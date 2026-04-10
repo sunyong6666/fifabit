@@ -379,12 +379,14 @@ namespace FIFAbit {
         pins.servoSetPulse(pin, pulseWidth)
     }
     //% blockId=servo360_run_with_duration
-    //% block="run 360° servo %pin at speed %speed %direction|for %duration s"
-    //% inlineInputMode=external
+    //% block="run 360° servo %pin at speed %speed %direction||for %duration s"
+    //% expandableArgumentMode="enabled"
     //% speed.min=0 speed.max=100 speed.defl=50
     //% duration.min=0 duration.max=100 duration.defl=1
+    //% duration.shadow="math_number"
+    //% duration.optional=1
     //% group="Servo Motor" weight=4
-    export function runServo360ForDuration(pin: ServoPin, speed: number, direction: RotationDirection, duration: number): void {
+    export function runServo360ForDuration(pin: ServoPin, speed: number, direction: RotationDirection, duration?: number): void {
         // 启动舵机
         runServo360(pin, speed, direction)
 
@@ -551,7 +553,7 @@ namespace FIFAbit {
     //#########################################################################
     //##################################LCD#################################
     //#########################################################################
-    const LCD_ADDRESS = 0x27  // 常见I2C地址，也可能是0x3F
+    const LCD_ADDRESS = 0x20 
     let lcd_isInitialized = false
 
     //% blockId="lcd1602_init" block="初始化LCD1602"
