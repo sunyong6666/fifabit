@@ -171,7 +171,7 @@ namespace FIFAbit {
 
         if (h < 0) h += 360
 
-        //serial.writeLine("H=" + h + " S=" + s)
+        serial.writeLine("H=" + h + " S=" + s)
 
         // ===== 分类（修正区间判断）=====
         if (color == DetectedColor.Red){
@@ -184,7 +184,7 @@ namespace FIFAbit {
             if (h >= 50 && h < 70) return true
             return false
         } else if (color == DetectedColor.Green) {
-            if (h >= 70 && h < 130) return true
+            if (h >= 70 && h < 145) return true
             return false
         } else if (color == DetectedColor.Cyan) {
             if (h >= 160 && h < 210) return true

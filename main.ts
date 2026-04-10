@@ -127,7 +127,7 @@ namespace FIFAbit {
     //#########################################################################
     //% blockId=motionSpeed
     //% block="move %mtype at speed %mspeed"
-    //% group="Motion" weight=3
+    //% group="Motion" weight=9
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     export function motionSpeed(mtype: motionType, mspeed: number): void {
         const spAddr = 0x8C + 0x01;//设置速度
@@ -146,7 +146,7 @@ namespace FIFAbit {
     }
     //% blockId=motionDistance
     //% block="move %mtype at speed %mspeed for %distance cm"
-    //% group="Motion" weight=2
+    //% group="Motion" weight=8
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     //% distance.min=0 distance.max=1000 distance.defl=10
     export function motionDistance(mtype: motionType1, mspeed: number, distance: number): void {
@@ -172,7 +172,7 @@ namespace FIFAbit {
     }
     //% blockId=motionAngle
     //% block="move %mtype at speed %mspeed for %angle °"
-    //% group="Motion" weight=1
+    //% group="Motion" weight=7
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     //% angle.min=0 angle.max=1000 distance.defl=90
     export function motionAngle(mtype: motionType2, mspeed: number, angle: number): void {
@@ -198,7 +198,7 @@ namespace FIFAbit {
     }
     //% blockId=motionStop
     //% block="stop motion"
-    //% group="Motion" weight=1
+    //% group="Motion" weight=6
     export function motionStop(): void {
         const regAddr = 0x8C + 0x00;//执行
         let cmdBuff = pins.createBuffer(2);
