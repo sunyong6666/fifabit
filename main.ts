@@ -730,7 +730,8 @@ namespace FIFAbit {
     let ultrasonic_isInitialized = false
 
     //% blockId=ultrasonic_init
-    //% block="初始化超声波模块 Trig脚连接 %trig Echo脚连接 %echo"
+    //% block="初始化超声波模块|Trig脚连接 %trig|Echo脚连接 %echo"
+    //% inlineInputMode=external
     //% group="Ultrasonic" weight=9
     export function initUltrasonic(trig: ServoPin, echo: ServoPin): void {
         trigPin = trig as number
@@ -790,6 +791,7 @@ namespace FIFAbit {
             return re
         }
     }
+
     //% blockId=rockerori
     //% block="Joystick detected %orientation"
     //% group="Roker" weight=48
@@ -800,28 +802,20 @@ namespace FIFAbit {
         let lr = GetBuff2.getNumber(NumberFormat.Int8BE, 1)
         let flag
         if (orientation == 1) {
-            if (ud > 50)
-                flag = true
-            else
-                flag = false
+            if (ud > 50) flag = true
+            else flag = false
         }
         if (orientation == 2) {
-            if (ud < -50)
-                flag = true
-            else
-                flag = false
+            if (ud < -50) flag = true
+            else flag = false
         }
         if (orientation == 4) {
-            if (lr < -50)
-                flag = true
-            else
-                flag = false
+            if (lr < -50) flag = true
+            else flag = false
         }
         if (orientation == 3) {
-            if (lr > 50)
-                flag = true
-            else
-                flag = false
+            if (lr > 50) flag = true
+            else flag = false
         }
         return flag
     }
