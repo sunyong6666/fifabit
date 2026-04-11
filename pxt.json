@@ -11,6 +11,7 @@
         "main.blocks",
         "main.ts",
         "block/lcd1602.ts",
+        "block/sensor.ts",
         "block/ultrasonic.ts",
         "block/veml6040.ts",
         "block/line.ts",
