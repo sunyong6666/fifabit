@@ -61,7 +61,7 @@ namespace FIFAbit {
         // 计算距离（厘米）
         // 声音速度：340m/s = 34000cm/s = 0.034cm/μs
         // 往返距离除以2
-        let distance = duration * 0.034 / 2
+        let distance = duration * 0.034 / 2 * 1.5
 
         // 限制有效范围（通常超声波模块有效范围2-400cm）
         if (distance < 2 || distance > 400) {
