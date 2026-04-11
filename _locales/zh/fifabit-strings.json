@@ -57,9 +57,9 @@
     "FIFAbit.initStrip|block": "初始化灯带引脚 %pin 灯数 %ledCount",
     "FIFAbit.setBrightness|block": "设置亮度 %brightness",
     "FIFAbit.setAllColor|block": "设置全部灯为颜色 %color",
-    "FIFAbit.setAllRGB|block": "设置全部灯 RGB R %red G %green B %blue",
+    "FIFAbit.setAllRGB|block": "设置全部灯 R %red G %green B %blue",
     "FIFAbit.setLEDColor|block": "设置第 %index 个灯为颜色 %color",
-    "FIFAbit.setLEDRGB|block": "设置第 %index 个灯 RGB R %red G %green B %blue",
+    "FIFAbit.setLEDRGB|block": "设置第 %index 个灯 R %red G %green B %blue",
     "FIFAbit.clearAll|block": "熄灭全部灯",
 
 
