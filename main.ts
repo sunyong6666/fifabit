@@ -378,24 +378,23 @@ namespace FIFAbit {
         // 设置脉冲宽度
         pins.servoSetPulse(pin, pulseWidth)
     }
-    //% blockId=servo360_run_with_duration
-    //% block="run 360° servo %pin at speed %speed %direction||for %duration s"
-    //% expandableArgumentMode="enabled"
-    //% speed.min=0 speed.max=100 speed.defl=50
-    //% duration.min=0 duration.max=100 duration.defl=1
-    //% duration.shadow="math_number"
-    //% duration.optional=1
-    //% group="Servo Motor" weight=4
-    export function runServo360ForDuration(pin: ServoPin, speed: number, direction: RotationDirection, duration?: number): void {
-        // 启动舵机
-        runServo360(pin, speed, direction)
+    // //% blockId=servo360_run_with_duration
+    // //% block="run 360° servo %pin  %speed %direction for %duration s"
+    // //% expandableArgumentMode="enabled"
+    // //% speed.min=0 speed.max=100 speed.defl=50
+    // //% duration.min=0 duration.max=100 duration.defl=1
 
-        // 等待指定时间
-        basic.pause(duration * 1000)
+    // //% group="Servo Motor" weight=4
+    // export function runServo360ForDuration(pin: ServoPin, speed: number, direction: RotationDirection, duration: number): void {
+    //     // 启动舵机
+    //     runServo360(pin, speed, direction)
 
-        // 停止舵机
-        stopServo360(pin)
-    }
+    //     // 等待指定时间
+    //     basic.pause(duration * 1000)
+
+    //     // 停止舵机
+    //     stopServo360(pin)
+    // }
 
     //% blockId=servo360_stop
     //% block="stop 360° servo %pin"
