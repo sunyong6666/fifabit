@@ -52,6 +52,9 @@ namespace FIFAbit {
         pinMap[1] = left as number
         pinMap[2] = middle as number
         pinMap[3] = right as number
+        pins.setPull(pinMap[1], PinPullMode.PullNone)
+        pins.setPull(pinMap[2], PinPullMode.PullNone)
+        pins.setPull(pinMap[3], PinPullMode.PullNone)
         line_isInitialized = true
     }
     //% blockId=linetracking_detect  
@@ -69,6 +72,7 @@ namespace FIFAbit {
     export function readSensorValue(position: SensorSide): number {
         if (!line_isInitialized) return 0
         let pin = pinMap[position]
+        basic.pause(10)
         return pins.digitalReadPin(pin)
     }
 }
