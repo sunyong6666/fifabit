@@ -30,11 +30,11 @@
     "FIFAbit.motorStop|block": "电机 %mID 停止",
 
     "{id:group}Servo Motor": "舵机",
-    "servo1Set|block": "设置180舵机 %pin 角度为 %value °",
-    "servo1Stop|block": "停止180舵机 %pin",
-    "servo360_run|block": "360舵机 %pin 以速度 %speed %direction 转动",
-    "servo360_run_with_duration|block": "360舵机 %pin 以速度 %speed %direction |转动 %duration 秒",
-    "servo360_stop|block": "停止360舵机 %pin",
+    "FIFAbit.servo1Set|block": "设置180舵机 %pin 角度为 %value °",
+    "FIFAbit.servo1Stop|block": "停止180舵机 %pin",
+    "FIFAbit.servo360_run|block": "360舵机 %pin 以速度 %speed %direction 转动",
+    "FIFAbit.servo360_run_with_duration|block": "360舵机 %pin 以速度 %speed %direction |转动 %duration 秒",
+    "FIFAbit.servo360_stop|block": "停止360舵机 %pin",
     
     
  
