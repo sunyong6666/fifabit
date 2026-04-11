@@ -99,12 +99,14 @@
     "FIFAbit.isPressed|block": "按键 %pin 是否按下?",
 
     "{id:group}Joystick": "摇杆",
-    "rock.orient1": "上",
-    "rock.orient2": "下",
-    "rock.orient3": "左",
-    "rock.orient4": "右",
+    "JoyDirection.Up": "上",
+    "JoyDirection.Down": "下",
+    "JoyDirection.Left": "左",
+    "JoyDirection.Right": "右",
+    "FIFAbit.initJoystick|block": "初始化摇杆|X %xPin|Y %yPin|按键 %swPin",
     "FIFAbit.rocker|block": "读取摇杆 %direction 数值",
     "FIFAbit.rockerori|block": "摇杆检测到 %orientation 方向?",
+    "FIFAbit.isJoystickPressed|block": "摇杆按键被按下",
     
     "{id:group}Ultrasonic": "超声波",
     "FIFAbit.initUltrasonic|block": "初始化超声波|Trig脚 %trig|Echo脚 %echo",

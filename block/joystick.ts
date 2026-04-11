@@ -53,7 +53,7 @@ namespace FIFAbit {
 
 
     //% blockId=joystick_init
-    //% block="初始化摇杆|X %xPin|Y %yPin|按键 %swPin"
+    //% block="initialize joystick|X %xPin|Y %yPin|button %swPin"
     //% inlineInputMode=external
     //% xPin.defl=JoystickPin.P0
     //% yPin.defl=JoystickPin.P1
@@ -109,10 +109,9 @@ namespace FIFAbit {
         return false
     }
 
-   
 
     //% blockId=joystick_button
-    //% block="摇杆按键被按下"
+    //% block="joystick button pressed?"
     //% group="Joystick" weight=47
     export function isJoystickPressed(): boolean {
         if (!joystick_inited) return false
