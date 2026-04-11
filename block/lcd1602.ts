@@ -1,8 +1,8 @@
 //----------------------------------LCD1602-------------------------------
 enum LcdBacklight {
-    //% block="开"
+    //% block="on"
     On = 1,
-    //% block="关"
+    //% block="off"
     Off = 0
 }
 namespace FIFAbit {
@@ -46,7 +46,7 @@ namespace FIFAbit {
     }
 
 
-    //% blockId="lcd1602_init" block="初始化LCD1602"
+    //% blockId="lcd1602_init" block="init LCD1602"
     //% group="LCD1602" weight=100
     export function lcd1602_init() {
         basic.pause(50)
@@ -66,14 +66,14 @@ namespace FIFAbit {
         basic.pause(5)
     }
 
-    //% blockId="lcd1602_clear" block="LCD清屏"
+    //% blockId="lcd1602_clear" block="clear display"
     //% group="LCD1602" weight=99
     export function lcd1602_clear() {
         command(0x01)
         basic.pause(2)
     }
 
-    //% blockId="lcd1602_show_line" block="显示%text 在第%row行第 %col 列"
+    //% blockId="lcd1602_show_line" block="show %text at row %row col %col"
     //% text.defl="hello"
     //% row.min=0 row.max=1 row.defl=0
     //% col.min=0 col.max=15 col.defl=0
@@ -85,7 +85,7 @@ namespace FIFAbit {
         }
     }
 
-    //% blockId="lcd1602_show_number" block="显示数字 %num 在第%row行第 %col 列"
+    //% blockId="lcd1602_show_number" block="show number %num at row %row col %col"
     //% num.defl=0
     //% row.min=0 row.max=1 row.defl=0
     //% col.min=0 col.max=15 col.defl=0
@@ -94,7 +94,7 @@ namespace FIFAbit {
         showAt(num.toString(), row, col)
     }
 
-    //% blockId="lcd1602_backlight" block="设置背光 %state"
+    //% blockId="lcd1602_backlight" block="set backlight %state"
     //% group="LCD1602" weight=96
     export function setBacklight(state: LcdBacklight) {
         backlight = state == LcdBacklight.On ? 0x08 : 0x00

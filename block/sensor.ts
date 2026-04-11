@@ -30,7 +30,7 @@ enum rock {
 namespace FIFAbit {
     //----------------------------------电位器-------------------------------
     //% blockId=potentiometer_read_raw
-    //% block="读取电位器 %pin 原始值"
+    //% block="read potentiometer %pin raw value"
     //% group="Potentiometer" weight=99
     export function readRawValue(pin: PotPin): number {
         // 直接读取模拟值，范围0-1023
@@ -38,7 +38,7 @@ namespace FIFAbit {
     }
 
     //% blockId=potentiometer_read_percent
-    //% block="读取电位器 %pin 百分比"
+    //% block="read potentiometer %pin percentage"
     //% group="Potentiometer" weight=98
     export function readPercentage(pin: PotPin): number {
         // 读取原始值
@@ -54,7 +54,7 @@ namespace FIFAbit {
 
     //----------------------------------土壤湿度-------------------------------
     //% blockId=soil_read_raw
-    //% block="读取土壤湿度 %pin 原始值"
+    //% block="read soil moisture %pin raw value"
     //% group="Soil Moisture Sensor" weight=89
     export function readRawValueTR(pin: PotPin): number {
         // 直接读取模拟值，范围0-1023
@@ -62,7 +62,7 @@ namespace FIFAbit {
     }
 
     //% blockId=soil_read_percent
-    //% block="读取土壤湿度 %pin 百分比"
+    //% block="read soil moisture %pin percentage"
     //% group="Soil Moisture Sensor" weight=88
     export function readPercentageTR(pin: PotPin): number {
         // 读取原始值
@@ -78,7 +78,7 @@ namespace FIFAbit {
 
     //----------------------------------按键-------------------------------
     //% blockId=button_is_pressed
-    //% block="按键 %pin 是否按下"
+    //% block="button %pin is pressed?"
     //% group="Button" weight=79
     export function isPressed(pin: ServoPin): boolean {
         let value = pins.digitalReadPin(pin as number)
@@ -88,8 +88,8 @@ namespace FIFAbit {
 
     //----------------------------------摇杆-------------------------------
     //% blockId=rocker
-    //% block="Joystick %direction moved"
-    //% group="Roker" weight=49
+    //% block="read joystick %direction value"
+    //% group="Joystick" weight=49
     export function rocker(direction: rocket): number {
         let GetBuff = pins.createBuffer(3)
         GetBuff = pins.i2cReadBuffer(97, 3)
@@ -102,8 +102,8 @@ namespace FIFAbit {
     }
 
     //% blockId=rockerori
-    //% block="Joystick detected %orientation"
-    //% group="Roker" weight=48
+    //% block="joystick detects %orientation?"
+    //% group="Joystick" weight=48
     export function rockerori(orientation: rock): boolean {
         let GetBuff2 = pins.createBuffer(3)
         GetBuff2 = pins.i2cReadBuffer(97, 3)

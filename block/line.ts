@@ -19,11 +19,11 @@ enum LineSensorPin {
 }
 
 enum SensorSide {
-    //% block="左"
+    //% block="left"
     Left = 1,
-    //% block="中"
+    //% block="middle"
     Middle = 2,
-    //% block="右"
+    //% block="right"
     Right = 3
 }
 
@@ -42,7 +42,7 @@ namespace FIFAbit {
     }
 
     //% blockId=linetracking_init
-    //% block="初始化巡线传感器引脚|左探头%left|中探头%middle|右探头%right"
+    //% block="init line sensors|left %left|middle %middle|right %right"
     //% inlineInputMode=external
     //% left.defl=LineSensorPin.P0
     //% middle.defl=LineSensorPin.P1
@@ -58,7 +58,7 @@ namespace FIFAbit {
         line_isInitialized = true
     }
     //% blockId=linetracking_detect  
-    //% block="%position 探头检测到黑线？"
+    //% block="%position sensor detects black line?"
     //% group="Line Tracking Sensor" weight=58
     export function detectLine(position: SensorSide): boolean {
         if (!line_isInitialized) return false
@@ -67,7 +67,7 @@ namespace FIFAbit {
     }
 
     //% blockId=linetracking_read_value
-    //% block="读取%position 探头值"
+    //% block="read %position sensor value"
     //% group="Line Tracking Sensor" weight=57
     export function readSensorValue(position: SensorSide): number {
         if (!line_isInitialized) return 0

@@ -24,7 +24,7 @@ namespace FIFAbit {
     let ultrasonic_isInitialized = false
 
     //% blockId=ultrasonic_init
-    //% block="初始化超声波模块|Trig脚连接 %trig|Echo脚连接 %echo"
+    //% block="init ultrasonic|Trig %trig|Echo %echo"
     //% inlineInputMode=external
     //% trig.defl=UltrasonicPin.P0
     //% echo.defl=UltrasonicPin.P1
@@ -40,7 +40,7 @@ namespace FIFAbit {
     }
 
     //% blockId=ultrasonic_read_distance
-    //% block="读取超声波距离（cm）"
+    //% block="read distance (cm)"
     //% group="Ultrasonic" weight=8
     export function readDistance(): number {
         if (!ultrasonic_isInitialized) {
@@ -49,10 +49,13 @@ namespace FIFAbit {
 
         // 发送10us的高电平脉冲
         pins.digitalWritePin(trigPin, 0)
+        basic.pause(1)
         control.waitMicros(2)
+
         pins.digitalWritePin(trigPin, 1)
         control.waitMicros(10)
         pins.digitalWritePin(trigPin, 0)
+        
 
         // 读取高电平持续时间
         // 注意：pins.pulseIn返回的是微秒

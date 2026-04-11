@@ -19,7 +19,7 @@
     "FIFAbit.motionStop|block": "停止运动",
 
     "{id:group}Motor": "电机",
-    "FIFAbit.motorGetSpeed|block": "获取电机 %mID 速度",
+    "FIFAbit.motorGetSpeed|block": "读取电机 %mID 速度",
     "FIFAbit.motorSetSpeed|block": "设置电机 %mID 速度为 %speed",
     "FIFAbit.motorRun|block": "电机 %mID %direction 运行",
     "FIFAbit.motorRunDistance|block": "电机 %mID %direction 运行 %distance 厘米",
@@ -61,8 +61,69 @@
     "FIFAbit.setLEDColor|block": "设置第 %index 个灯为颜色 %color",
     "FIFAbit.setLEDRGB|block": "设置第 %index 个灯 RGB R %red G %green B %blue",
     "FIFAbit.clearAll|block": "熄灭全部灯",
+
+
+
+    "{id:group}LCD1602": "LCD1602",
+
+    "LcdBacklight.On": "开",
+    "LcdBacklight.Off": "关",
+
+    "FIFAbit.lcd1602_init|block": "初始化 LCD1602",
+    "FIFAbit.lcd1602_clear|block": "清屏",
+    "FIFAbit.showAt|block": "显示 %text 在第 %row 行第 %col 列",
+    "FIFAbit.showNumber|block": "显示数字 %num 在第 %row 行第 %col 列",
+    "FIFAbit.setBacklight|block": "设置背光 %state",
+
+
+    "{id:group}Line Tracking Sensor": "巡线传感器",
+
+    "SensorSide.Left": "左",
+    "SensorSide.Middle": "中",
+    "SensorSide.Right": "右",
+
+    "FIFAbit.initSensors|block": "初始化巡线传感器引脚|左探头%left|中探头%middle|右探头%right",
+    "FIFAbit.detectLine|block": "%position 探头检测到黑线？",
+    "FIFAbit.readSensorValue|block": "读取 %position 探头值",
+
+
+    "{id:group}Potentiometer": "电位器",
+    "FIFAbit.readRawValue|block": "读取电位器 %pin 原始值",
+    "FIFAbit.readPercentage|block": "读取电位器 %pin 百分比",
+
+    "{id:group}Soil Moisture Sensor": "土壤湿度",
+    "FIFAbit.readRawValueTR|block": "读取土壤湿度 %pin 原始值",
+    "FIFAbit.readPercentageTR|block": "读取土壤湿度 %pin 百分比",
+
+    "{id:group}Button": "按键",
+    "FIFAbit.isPressed|block": "按键 %pin 是否按下?",
+
+    "{id:group}Joystick": "摇杆",
+    "rock.orient1": "上",
+    "rock.orient2": "下",
+    "rock.orient3": "左",
+    "rock.orient4": "右",
+    "FIFAbit.rocker|block": "读取摇杆 %direction 数值",
+    "FIFAbit.rockerori|block": "摇杆检测到 %orientation 方向?",
+    
+    "{id:group}Ultrasonic": "超声波",
+    "FIFAbit.initUltrasonic|block": "初始化超声波|Trig脚 %trig|Echo脚 %echo",
+    "FIFAbit.readDistance|block": "读取超声波距离（cm）",
+
+
+    "{id:group}Color Sensor": "颜色传感器",
+    "DetectedColor.Red": "红色",
+    "DetectedColor.Orange": "橙色",
+    "DetectedColor.Yellow": "黄色",
+    "DetectedColor.Green": "绿色",
+    "DetectedColor.Cyan": "青色",
+    "DetectedColor.Blue": "蓝色",
+    "DetectedColor.Purple": "紫色",
+
+    "FIFAbit.init_veml|block": "初始化颜色传感器",
+    "FIFAbit.isColorDetected|block": "识别到颜色 %color",
+    "FIFAbit.readRGBValue|block": "读取 %channel 值",
+    "FIFAbit.readWhiteValue|block": "读取亮度值"
     
     
- 
-    "{id:group}Sensor": "传感器"
 }

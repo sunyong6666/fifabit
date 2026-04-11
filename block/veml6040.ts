@@ -4,19 +4,19 @@ const GAIN_G = 0.95
 const GAIN_B = 1.81
 
 enum DetectedColor {
-    //% block="红色"
+    //% block="red"
     Red,
-    //% block="橙色"
+    //% block="orange"
     Orange,
-    //% block="黄色"
+    //% block="yellow"
     Yellow,
-    //% block="绿色"
+    //% block="green"
     Green,
-    //% block="青色"
+    //% block="cyan"
     Cyan,
-    //% block="蓝色"
+    //% block="blue"
     Blue,
-    //% block="紫色"
+    //% block="purple"
     Purple,
     // //% block="白色"
     // White,
@@ -112,7 +112,7 @@ namespace FIFAbit {
 
 
     //% blockId=init_veml
-    //% block="init VEML6040"
+    //% block="init color sensor"
     //% group="Color Sensor" weight=39
     export function init_veml(): void {
         if (!veml_initialized) {
@@ -124,7 +124,7 @@ namespace FIFAbit {
     }
 
     //% blockId=isColorDetected
-    //% block="识别到颜色 %color"
+    //% block="detect color %color"
     //% group="Color Sensor" weight=38
     export function isColorDetected(color: DetectedColor): boolean {
         updateRGB()
@@ -150,6 +150,8 @@ namespace FIFAbit {
         let min = min3(nr, ng, nb)
 
         // ===== 饱和度 =====
+        if (max == 0) return false
+        if (max == min) return false
         let s = (max - min) / max
         //serial.writeLine(s + "")
         if (s < 0.1) {
@@ -200,7 +202,7 @@ namespace FIFAbit {
     }
     
     //% blockId=readRGBValue
-    //% block="读取 %channel 值"
+    //% block="read %channel value"
     //% group="Color Sensor" weight=37
     export function readRGBValue(channel: enRGB): number {
         updateRGB()
@@ -235,7 +237,7 @@ namespace FIFAbit {
     }
 
     //% blockId=readWhiteValue
-    //% block="读取亮度值"
+    //% block="read brightness"
     //% group="Color Sensor" weight=36
     export function readWhiteValue(): number {
         updateRGB()
