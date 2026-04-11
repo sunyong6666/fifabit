@@ -14,6 +14,7 @@
         "block/sensor.ts",
         "block/ultrasonic.ts",
         "block/veml6040.ts",
+        "block/joystick.ts",
         "block/line.ts",
         "_locales/zh/fifabit-strings.json",
         "README.md"
