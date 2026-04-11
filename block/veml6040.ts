@@ -124,7 +124,7 @@ namespace FIFAbit {
     }
 
     //% blockId=isColorDetected
-    //% block="detect color %color"
+    //% block="detect color %color?"
     //% group="Color Sensor" weight=38
     export function isColorDetected(color: DetectedColor): boolean {
         updateRGB()
