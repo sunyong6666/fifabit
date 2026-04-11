@@ -64,7 +64,7 @@ namespace FIFAbit {
         joyY = yPin
         joySW = swPin
 
-        pins.setPull(joySW, PinPullMode.PullUp) // 按键一般是低电平触发
+        pins.setPull(joySW, PinPullMode.PullUp)
         joystick_inited = true
     }
 
@@ -94,10 +94,10 @@ namespace FIFAbit {
         let threshold = 200
 
         if (orientation == JoyDirection.Up) {
-            return y > center + threshold
+            return y < center - threshold
         }
         if (orientation == JoyDirection.Down) {
-            return y < center - threshold
+            return y > center + threshold
         }
         if (orientation == JoyDirection.Left) {
             return x < center - threshold
@@ -115,6 +115,7 @@ namespace FIFAbit {
     //% group="Joystick" weight=47
     export function isJoystickPressed(): boolean {
         if (!joystick_inited) return false
+        serial.writeLine("" + pins.digitalReadPin(joySW))
 
         return pins.digitalReadPin(joySW) == 0
     }
