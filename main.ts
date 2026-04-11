@@ -71,24 +71,24 @@ enum RotationDirection {
 
 // 灯条预定义颜色
 enum Colors {
-    //% block=红
+    //% block="red"
     Red = 0xFF0000,
-    //% block=橙
+    //% block="orange"
     Orange = 0xFF7F00,
-    //% block=黄
+    //% block="yellow"
     Yellow = 0xFFFF00,
-    //% block=绿
+    //% block="green"
     Green = 0x00FF00,
-    //% block=青
+    //% block="cyan"
     Cyan = 0x00FFFF,
-    //% block=蓝
+    //% block="blue"
     Blue = 0x0000FF,
-    //% block=紫
+    //% block="purple"
     Purple = 0x7F00FF,
-    //% block=白
+    //% block="white"
     White = 0xFFFFFF,
-    //% block=黑
-    Off = 0x000000
+    //% block="black"
+    Black = 0x000000
 }
 
 
@@ -442,18 +442,18 @@ namespace FIFAbit {
     let currentLEDCount: number = 8
 
     //% blockId=ws2812b_init
-    //% block="初始化灯条 引脚 %pin 灯数 %ledCount"
+    //% block="init strip pin %pin with %ledCount LEDs"
     //% ledCount.min=1 ledCount.max=50 ledCount.defl=8
-    //% group="LED" weight=9
+    //% group="LED Strip" weight=9
     export function initStrip(pin: ServoPin, ledCount: number): void {
         currentStrip = new WS2812BStrip(pin as number, ledCount)
         currentLEDCount = ledCount
     }
 
     //% blockId=ws2812b_set_brightness
-    //% block="设置亮度 %brightness"
+    //% block="set brightness %brightness"
     //% brightness.min=0 brightness.max=255 brightness.defl=128
-    //% group="LED" weight=8
+    //% group="LED Strip" weight=8
     export function setBrightness(brightness: number): void {
         if (currentStrip) {
             currentStrip.setBrightness(brightness)
@@ -461,8 +461,8 @@ namespace FIFAbit {
     }
 
     //% blockId=ws2812b_set_all
-    //% block="设置全部灯为颜色 %color"
-    //% group="LED" weight=7
+    //% block="set all LEDs to %color"
+    //% group="LED Strip" weight=7
     export function setAllColor(color: Colors): void {
         if (currentStrip) {
             for (let i = 0; i < currentLEDCount; i++) {
@@ -473,11 +473,11 @@ namespace FIFAbit {
     }
 
     //% blockId=ws2812b_set_all_rgb
-    //% block="设置全部灯RGB R %red G %green B %blue"
+    //% block="set all LEDs to R %red G %green B %blue"
     //% red.min=0 red.max=255 red.defl=255
     //% green.min=0 green.max=255 green.defl=0
     //% blue.min=0 blue.max=255 blue.defl=0
-    //% group="LED" weight=6
+    //% group="LED Strip" weight=6
     export function setAllRGB(red: number, green: number, blue: number): void {
         if (currentStrip) {
             let rgb = (red << 16) | (green << 8) | blue
@@ -489,9 +489,9 @@ namespace FIFAbit {
     }
 
     //% blockId=ws2812b_set_led
-    //% block="设置第 %index 个灯为颜色 %color"
+    //% block="set LED %index to %color"
     //% index.min=0 index.defl=0
-    //% group="LED" weight=5
+    //% group="LED Strip" weight=5
     export function setLEDColor(index: number, color: Colors): void {
         if (currentStrip && index >= 0 && index < currentLEDCount) {
             currentStrip.setPixelColor(index, color)
@@ -500,13 +500,13 @@ namespace FIFAbit {
     }
 
     //% blockId=ws2812b_set_led_rgb
-    //% block="设置%index灯R %red G %green B %blue"
+    //% block="set LED %index to R %red G %green B %blue"
     //% index.min=0 index.defl=0
     //% red.min=0 red.max=255 red.defl=255
     //% green.min=0 green.max=255 green.defl=0
     //% blue.min=0 blue.max=255 blue.defl=0
     //% inlineInputMode=inline
-    //% group="LED" weight=4
+    //% group="LED Strip" weight=4
     export function setLEDRGB(index: number, red: number, green: number, blue: number): void {
         if (currentStrip && index >= 0 && index < currentLEDCount) {
             let rgb = (red << 16) | (green << 8) | blue
@@ -516,8 +516,8 @@ namespace FIFAbit {
     }
 
     //% blockId=ws2812b_clear
-    //% block="熄灭全部灯"
-    //% group="LED" weight=3
+    //% block="clear all LEDs"
+    //% group="LED Strip" weight=3
     export function clearAll(): void {
         if (currentStrip) {
             currentStrip.clear()
