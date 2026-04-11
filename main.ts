@@ -344,11 +344,11 @@ namespace FIFAbit {
             if (direction === RotationDirection.Clockwise) {
                 // 顺时针方向：脉冲宽度大于1500µs
                 // 1500-2000µs 对应速度 0-100
-                pulseWidth = 1500 + (speed * 5)
+                pulseWidth = 1500 - (speed * 5)
             } else {
                 // 逆时针方向：脉冲宽度小于1500µs
                 // 1000-1500µs 对应速度 0-100
-                pulseWidth = 1500 - (speed * 5)
+                pulseWidth = 1500 + (speed * 5)
             }
         }
         // 设置脉冲宽度
