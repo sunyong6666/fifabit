@@ -1,5 +1,5 @@
 //#########################################################################
-//##################################其余的传感器#################################
+//##################################其余的传感器（电位器、土壤湿度、按钮）#################################
 //#########################################################################
 enum PotPin {
     //% block="P0"
@@ -8,23 +8,6 @@ enum PotPin {
     P1 = AnalogPin.P1,
     //% block="P2"
     P2 = AnalogPin.P2
-}
-
-enum rocket {
-    //% block="X"
-    x = 1,
-    //% block="Y"
-    y = 2
-}
-enum rock {
-    //% block="up"
-    orient1 = 2,
-    //% block="down"
-    orient2 = 1,
-    //% block="left"
-    orient3 = 4,
-    //% block="right"
-    orient4 = 3
 }
 
 namespace FIFAbit {
@@ -84,48 +67,5 @@ namespace FIFAbit {
         let value = pins.digitalReadPin(pin as number)
         // 返回 true 表示按下
         return value === 0
-    }
-
-    //----------------------------------摇杆-------------------------------
-    //% blockId=rocker
-    //% block="read joystick %direction value"
-    //% group="Joystick" weight=49
-    export function rocker(direction: rocket): number {
-        let GetBuff = pins.createBuffer(3)
-        GetBuff = pins.i2cReadBuffer(97, 3)
-        let re = GetBuff.getNumber(NumberFormat.Int8BE, direction)
-        if (direction == 2) {
-            return -re
-        } else {
-            return re
-        }
-    }
-
-    //% blockId=rockerori
-    //% block="joystick detects %orientation?"
-    //% group="Joystick" weight=48
-    export function rockerori(orientation: rock): boolean {
-        let GetBuff2 = pins.createBuffer(3)
-        GetBuff2 = pins.i2cReadBuffer(97, 3)
-        let ud = GetBuff2.getNumber(NumberFormat.Int8BE, 2)
-        let lr = GetBuff2.getNumber(NumberFormat.Int8BE, 1)
-        let flag
-        if (orientation == 1) {
-            if (ud > 50) flag = true
-            else flag = false
-        }
-        if (orientation == 2) {
-            if (ud < -50) flag = true
-            else flag = false
-        }
-        if (orientation == 4) {
-            if (lr < -50) flag = true
-            else flag = false
-        }
-        if (orientation == 3) {
-            if (lr > 50) flag = true
-            else flag = false
-        }
-        return flag
     }
 }
