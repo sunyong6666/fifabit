@@ -324,11 +324,11 @@ namespace FIFAbit {
         pins.digitalWritePin(pin, 0)
     }
 
-    //% blockId=servo360_run
+    //% blockId=servo360Run
     //% block="run 360° servo %pin at speed %speed %direction"
     //% speed.min=0 speed.max=100 speed.defl=50
     //% group="Servo Motor" weight=5
-    export function runServo360(pin: ServoPin, speed: number, direction: RotationDirection ): void {
+    export function servo360Run(pin: ServoPin, speed: number, direction: RotationDirection ): void {
         // 限制速度范围
         speed = Math.min(100, Math.max(0, speed))
 
@@ -369,13 +369,13 @@ namespace FIFAbit {
     //     basic.pause(duration * 1000)
 
     //     // 停止舵机
-    //     stopServo360(pin)
+    //     servo360Stop(pin)
     // }
 
-    //% blockId=servo360_stop
+    //% blockId=servo360Stop
     //% block="stop 360° servo %pin"
     //% group="Servo Motor" weight=3
-    export function stopServo360(pin: ServoPin): void {
+    export function servo360Stop(pin: ServoPin): void {
         // 设置脉冲宽度为1.5ms停止
         pins.servoSetPulse(pin, 1500)
     }

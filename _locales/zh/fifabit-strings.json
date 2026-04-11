@@ -17,7 +17,7 @@
     "{id:group}Motion": "运动",
     "FIFAbit.motionSpeed|block": "%mtype 速度 %mspeed",
     "FIFAbit.motionDistance|block": "%mtype 速度 %mspeed 距离 %distance 厘米",
-    "FIFAbit.motionAngle|block": "%mtype 速度 %mspeed 角度 %distance °",
+    "FIFAbit.motionAngle|block": "%mtype 速度 %mspeed 角度 %angle °",
     "FIFAbit.motionStop|block": "停止运动",
 
     "{id:group}Motor": "电机",
@@ -32,9 +32,9 @@
     "{id:group}Servo Motor": "舵机",
     "FIFAbit.servo1Set|block": "设置180舵机 %pin 角度为 %value °",
     "FIFAbit.servo1Stop|block": "停止180舵机 %pin",
-    "FIFAbit.servo360_run|block": "360舵机 %pin 以速度 %speed %direction 转动",
+    "FIFAbit.servo360Run|block": "360舵机 %pin 以速度 %speed %direction 转动",
     "FIFAbit.servo360_run_with_duration|block": "360舵机 %pin 以速度 %speed %direction |转动 %duration 秒",
-    "FIFAbit.servo360_stop|block": "停止360舵机 %pin",
+    "FIFAbit.servo360Stop|block": "停止360舵机 %pin",
     
     
  
