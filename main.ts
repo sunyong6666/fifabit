@@ -219,6 +219,24 @@ namespace FIFAbit {
         let speed = readBuff.getNumber(NumberFormat.Int16BE, 0);
         return speed; 
     }
+    //% blockId=motorGetAngle
+    //% block="get motor %mID encoder value"
+    //% group="Motor" weight=28
+    export function motorGetAngle(mID: motorID): number {
+        // 发送指令
+        const cmdAddr = mID + 0x00;
+        let cmdBuff = pins.createBuffer(1);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
+        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+
+        // 读取4字节数据（32位有符号整数）
+        let readBuff = pins.createBuffer(4);
+        readBuff = pins.i2cReadBuffer(i2cAddress, 4);
+
+        // 将4个字节作为有符号32位整数解析
+        let angle = readBuff.getNumber(NumberFormat.Int32BE, 0);
+        return angle;
+    }
     //% blockId=motorSetSpeed
     //% block="set motor %mID speed to %speed"
     //% group="Motor" weight=8
