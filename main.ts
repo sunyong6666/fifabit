@@ -106,6 +106,9 @@ namespace FIFAbit {
     //% group="Motion" weight=9
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     export function motionSpeed(mtype: motionType, mspeed: number): void {
+        if (mspeed > 100) mspeed = 100;
+        if (mspeed < 0) mspeed = 0;
+        
         const spAddr = 0x8C + 0x01;//设置速度
         let spBuff = pins.createBuffer(5);
         spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
@@ -126,6 +129,10 @@ namespace FIFAbit {
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     //% distance.min=0 distance.max=1000 distance.defl=10
     export function motionDistance(mtype: motionType1, mspeed: number, distance: number): void {
+        if (mspeed > 100) mspeed = 100;
+        if (mspeed < 0) mspeed = 0;
+        if (distance < 0) distance = 0;
+
         const spAddr = 0x8C + 0x01;//设置速度
         let spBuff = pins.createBuffer(5);
         spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
@@ -152,6 +159,10 @@ namespace FIFAbit {
     //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
     //% angle.min=0 angle.max=1000 angle.defl=90
     export function motionAngle(mtype: motionType2, mspeed: number, angle: number): void {
+        if (mspeed > 100) mspeed = 100;
+        if (mspeed < 0) mspeed = 0;
+        if (angle < 0) angle = 0;
+
         const spAddr = 0x8C + 0x01;//设置速度
         let spBuff = pins.createBuffer(5);
         spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
@@ -187,7 +198,7 @@ namespace FIFAbit {
     //#########################################################################
     //% blockId=motorGetSpeed
     //% block="get motor %mID speed"
-    //% group="Motor" weight=9
+    //% group="Motor" weight=29
     export function motorGetSpeed(mID: motorID): number {
         // 发送指令
         const cmdAddr = mID + 0x01;
@@ -213,6 +224,9 @@ namespace FIFAbit {
     //% group="Motor" weight=8
     //% speed.min=0 speed.max=100 speed.defl=50
     export function motorSetSpeed(mID: motorID, speed: number): void {
+        if (speed > 100) speed = 100;
+        if (speed < 0) speed = 0;
+
         // 设置速度
         const spAddr = mID + 0x04;
         let spBuff = pins.createBuffer(3);
@@ -238,6 +252,8 @@ namespace FIFAbit {
     //% distance.min=0 distance.max=1000 distance.defl=10
     //% inlineInputMode = inline
     export function motorRunDistance(mID: motorID, direction: motorDirection, distance: number): void {
+        if (distance < 0) distance = 0;
+
         //设置距离
         const disAddr = mID + 0x07;
         let disBuff = pins.createBuffer(3);
@@ -259,6 +275,8 @@ namespace FIFAbit {
     //% angle.min=0 angle.max=3600 angle.defl=90
     //% inlineInputMode = inline
     export function motorRunAngle(mID: motorID, direction: motorDirection, angle: number): void {
+        if (angle < 0) angle = 0;
+
         //设置偏移角度
         const disAddr = mID + 0x06;
         let disBuff = pins.createBuffer(3);
@@ -279,6 +297,9 @@ namespace FIFAbit {
     //% group="Motor" weight=4
     //% speed.min=0 speed.max=100 speed.defl=50
     export function motorRunSpeed(mID: motorID, direction: motorDirection, speed: number): void {
+        if (speed > 100) speed = 100;
+        if (speed < 0) speed = 0;
+
         // 设置速度
         const spAddr = mID + 0x04;
         let spBuff = pins.createBuffer(3);
