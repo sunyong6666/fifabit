@@ -28,9 +28,9 @@ enum motionType2 {
 
 // 选择控制的电机
 enum motorID {
-    //% block="0"
-    motor0 = 0x50,
     //% block="1"
+    motor0 = 0x50,
+    //% block="2"
     motor1 = 0x6E
 }
 
