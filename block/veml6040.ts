@@ -1,7 +1,7 @@
 //----------------------------------颜色传感器-------------------------------
-const GAIN_R = 0.93
-const GAIN_G = 0.95
-const GAIN_B = 1.81
+const GAIN_R = 1.3//0.93
+const GAIN_G = 1.25//0.95
+const GAIN_B = 2.3//1.81
 
 enum DetectedColor {
     //% block="red"
@@ -173,29 +173,29 @@ namespace FIFAbit {
 
         if (h < 0) h += 360
 
-        //serial.writeLine("H=" + h + " S=" + s)
+        serial.writeLine("H=" + h + " S=" + s)
 
         // ===== 分类（区间判断）=====
         if (color == DetectedColor.Red){
-            if (h < 10 || h >= 340) return true
+            if (h < 20 || h >= 345) return true
             return false
         }else if (color == DetectedColor.Orange){
-            if (h >= 15 && h < 50) return true
+            if (h >= 20 && h < 50) return true
             return false
         } else if (color == DetectedColor.Yellow) {
-            if (h >= 50 && h < 70) return true
+            if (h >= 50 && h < 75) return true
             return false
         } else if (color == DetectedColor.Green) {
-            if (h >= 70 && h < 145) return true
+            if (h >= 75 && h < 145) return true
             return false
         } else if (color == DetectedColor.Cyan) {
             if (h >= 160 && h < 210) return true
             return false
         } else if (color == DetectedColor.Blue) {
-            if (h >= 210 && h < 240) return true
+            if (h >= 210 && h < 250) return true
             return false
         } else if (color == DetectedColor.Purple) {
-            if (h >= 255 && h < 295) return true
+            if (h >= 255 && h < 335) return true
             return false
         }
         return false

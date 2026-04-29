@@ -152,6 +152,17 @@ namespace FIFAbit {
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, regAddr);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 1, mtype);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+
+        // 轮询状态（阻塞）
+        basic.pause(100);
+        while (true) {
+            pins.i2cWriteNumber(i2cAddress, 0x8C + 0x05, NumberFormat.UInt8BE);
+            let state = pins.i2cReadNumber(i2cAddress, NumberFormat.UInt8BE);
+            if (state == 0) {
+                break; 
+            }
+            basic.pause(20); 
+        }
     }
     //% blockId=motionAngle
     //% block="move %mtype at speed %mspeed for %angle °"
@@ -182,6 +193,17 @@ namespace FIFAbit {
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, regAddr);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 1, mtype);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+
+        // 轮询状态（阻塞）
+        basic.pause(100);
+        while (true) {
+            pins.i2cWriteNumber(i2cAddress, 0x8C + 0x05, NumberFormat.UInt8BE);
+            let state = pins.i2cReadNumber(i2cAddress, NumberFormat.UInt8BE);
+            if (state == 0) {
+                break;
+            }
+            basic.pause(20);
+        }
     }
     //% blockId=motionStop
     //% block="stop motion"
@@ -285,6 +307,17 @@ namespace FIFAbit {
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction + 6);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+
+        // 轮询状态（阻塞）
+        basic.pause(100);
+        while (true) {
+            pins.i2cWriteNumber(i2cAddress, mID + 0x09, NumberFormat.UInt8BE);
+            let state = pins.i2cReadNumber(i2cAddress, NumberFormat.UInt8BE);
+            if (state == 0) {
+                break;
+            }
+            basic.pause(20);
+        }
     }
 
     //% blockId=motorRunAngle
@@ -308,6 +341,17 @@ namespace FIFAbit {
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction + 4);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+
+        // 轮询状态（阻塞）
+        basic.pause(100);
+        while (true) {
+            pins.i2cWriteNumber(i2cAddress, mID + 0x09, NumberFormat.UInt8BE);
+            let state = pins.i2cReadNumber(i2cAddress, NumberFormat.UInt8BE);
+            if (state == 0) {
+                break;
+            }
+            basic.pause(20);
+        }
     }
 
     //% blockId=motorRunSpeed

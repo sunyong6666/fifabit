@@ -47,13 +47,12 @@ namespace FIFAbit {
             return 0
         }
 
-        // 发送10us的高电平脉冲
+        // 发送50us的高电平脉冲
         pins.digitalWritePin(trigPin, 0)
         basic.pause(1)
-        control.waitMicros(2)
 
         pins.digitalWritePin(trigPin, 1)
-        control.waitMicros(10)
+        control.waitMicros(50)
         pins.digitalWritePin(trigPin, 0)
         
 
@@ -64,7 +63,7 @@ namespace FIFAbit {
         // 计算距离（厘米）
         // 声音速度：340m/s = 34000cm/s = 0.034cm/μs
         // 往返距离除以2
-        let distance = duration * 0.034 / 2 * 1.5
+        let distance = duration * 0.034 / 2 * 1.0
 
         // 限制有效范围（通常超声波模块有效范围2-400cm）
         if (distance < 2 || distance > 400) {
