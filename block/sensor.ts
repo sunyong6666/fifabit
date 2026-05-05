@@ -59,13 +59,13 @@ namespace FIFAbit {
         return Math.round(percentage)
     }
 
-    //----------------------------------按键-------------------------------
-    //% blockId=button_is_pressed
-    //% block="button %pin is pressed?"
-    //% group="Button" weight=79
-    export function isPressed(pin: ServoPin): boolean {
-        let value = pins.digitalReadPin(pin as number)
-        // 返回 true 表示按下
-        return value === 0
-    }
+    // //----------------------------------按键-------------------------------
+    // //% blockId=button_is_pressed
+    // //% block="button %pin is pressed?"
+    // //% group="Button" weight=79
+    // export function isPressed(pin: ServoPin): boolean {
+    //     let value = pins.digitalReadPin(pin as number)
+    //     // 返回 true 表示按下
+    //     return value === 0
+    // }
 }
