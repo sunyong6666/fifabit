@@ -1,4 +1,7 @@
 //----------------------------------LCD1602-------------------------------
+let lastUpdateTime = 0
+const LCD_INTERVAL = 150   // 刷新间隔
+
 enum LcdBacklight {
     //% block="on"
     On = 1,
@@ -9,10 +12,19 @@ namespace FIFAbit {
     const LCD_ADDR = 0x20
     let backlight = 0x08
 
+    // function write4bits(value: number) {
+    //     pins.i2cWriteNumber(LCD_ADDR, value | backlight, NumberFormat.UInt8BE)
+    //     pins.i2cWriteNumber(LCD_ADDR, value | backlight | 0x04, NumberFormat.UInt8BE)
+    //     pins.i2cWriteNumber(LCD_ADDR, value | backlight, NumberFormat.UInt8BE)
+    // }
     function write4bits(value: number) {
-        pins.i2cWriteNumber(LCD_ADDR, value | backlight, NumberFormat.UInt8BE)
-        pins.i2cWriteNumber(LCD_ADDR, value | backlight | 0x04, NumberFormat.UInt8BE)
-        pins.i2cWriteNumber(LCD_ADDR, value | backlight, NumberFormat.UInt8BE)
+        let buf = pins.createBuffer(3)
+
+        buf[0] = value | backlight
+        buf[1] = value | backlight | 0x04   
+        buf[2] = value | backlight          
+
+        pins.i2cWriteBuffer(LCD_ADDR, buf)
     }
 
     // function send(value: number, mode: number) {
@@ -79,6 +91,10 @@ namespace FIFAbit {
     //% col.min=0 col.max=15 col.defl=0
     //% group="LCD1602" weight=98
     export function showAt(text: string, row: number, col: number) {
+        // 限制刷新频率 
+        let now = control.millis()
+        if (now - lastUpdateTime < LCD_INTERVAL) return
+
         setCursor(col, row)
         for (let i = 0; i < text.length; i++) {
             data(text.charCodeAt(i))
@@ -91,7 +107,15 @@ namespace FIFAbit {
     //% col.min=0 col.max=15 col.defl=0
     //% group="LCD1602" weight=97
     export function showNumber(num: number, row: number, col: number) {
-        showAt(num.toString(), row, col)
+        let text = num.toString()
+
+        // 固定长度（避免残留字符）
+        while (text.length < 4) {
+            text = " " + text
+        }
+
+        showAt(text, row, col)
+        //showAt(num.toString(), row, col)
     }
 
     //% blockId="lcd1602_backlight" block="set backlight %state"
@@ -100,5 +124,5 @@ namespace FIFAbit {
         backlight = state == LcdBacklight.On ? 0x08 : 0x00
         command(0) // 刷新
     }
-
+  
 }
