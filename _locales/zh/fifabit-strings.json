@@ -22,9 +22,9 @@
     "FIFAbit.motorGetSpeed|block": "读取电机 %mID 速度",
     "FIFAbit.motorGetAngle|block": "读取电机 %mID 编码值",
     "FIFAbit.motorSetSpeed|block": "设置电机 %mID 速度为 %speed",
-    "FIFAbit.motorRun|block": "电机 %mID %direction 运行",
-    "FIFAbit.motorRunDistance|block": "电机 %mID %direction 运行 %distance 厘米",
-    "FIFAbit.motorRunAngle|block": "电机 %mID %direction 转动 %angle 度",
+    "FIFAbit.motorRun|block": "电机 %mID 速度 %mspeed 运行",
+    "FIFAbit.motorRunDistance|block": "电机 %mID 速度 %mspeed 运行 %distance 厘米",
+    "FIFAbit.motorRunAngle|block": "电机 %mID 速度 %mspeed 转动 %angle 度",
     "FIFAbit.motorRunSpeed|block": "电机 %mID %direction 速度 %speed运行",
     "FIFAbit.motorStop|block": "电机 %mID 停止",
 

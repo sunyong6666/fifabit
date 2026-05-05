@@ -104,12 +104,32 @@ namespace FIFAbit {
     //% blockId=motionSpeed
     //% block="move %mtype at speed %mspeed"
     //% group="Motion" weight=9
-    //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
+    //% mspeed.min=-100 mspeed.max=100 mspeed.defl=50
     export function motionSpeed(mtype: motionType, mspeed: number): void {
         if (mspeed > 100) mspeed = 100;
-        if (mspeed < 0) mspeed = 0;
-        
+        if (mspeed < -100) mspeed = -100;
+
+        // 根据速度正负决定是否反转方向
+        let finalType = mtype;
+        if (mspeed < 0) {
+            switch (mtype) {
+                case motionType.type1: 
+                    finalType = motionType.type2;
+                    break;
+                case motionType.type2: 
+                    finalType = motionType.type1; 
+                    break;
+                case motionType.type3: 
+                    finalType = motionType.type4; 
+                    break;
+                case motionType.type4: 
+                    finalType = motionType.type3; 
+                    break;
+            }
+        }
+
         const spAddr = 0x8C + 0x01;//设置速度
+        mspeed = Math.abs(mspeed);//绝对值
         let spBuff = pins.createBuffer(5);
         spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
         spBuff.setNumber(NumberFormat.UInt8BE, 1, (mspeed >> 8) & 0xFF);
@@ -120,20 +140,36 @@ namespace FIFAbit {
         const regAddr = 0x8C + 0x00;//执行
         let cmdBuff = pins.createBuffer(2);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, regAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, mtype);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, finalType);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
     //% blockId=motionDistance
     //% block="move %mtype at speed %mspeed for %distance cm"
     //% group="Motion" weight=8
-    //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
+    //% mspeed.min=-100 mspeed.max=100 mspeed.defl=50
     //% distance.min=0 distance.max=1000 distance.defl=10
     export function motionDistance(mtype: motionType1, mspeed: number, distance: number): void {
-        if (mspeed > 100) mspeed = 100;
-        if (mspeed < 0) mspeed = 0;
         if (distance < 0) distance = 0;
+        if (distance > 1000) distance = 1000;
+
+        if (mspeed > 100) mspeed = 100;
+        if (mspeed < -100) mspeed = -100;
+
+        // 根据速度正负决定是否反转方向
+        let finalType = mtype;
+        if (mspeed < 0) {
+            switch (mtype) {
+                case motionType1.type1:
+                    finalType = motionType1.type2;
+                    break;
+                case motionType1.type2:
+                    finalType = motionType1.type1;
+                    break;
+            }
+        }
 
         const spAddr = 0x8C + 0x01;//设置速度
+        mspeed = Math.abs(mspeed);//绝对值
         let spBuff = pins.createBuffer(5);
         spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
         spBuff.setNumber(NumberFormat.UInt8BE, 1, (mspeed >> 8) & 0xFF);
@@ -150,20 +186,35 @@ namespace FIFAbit {
         const regAddr = 0x8C + 0x00;//执行
         let cmdBuff = pins.createBuffer(2);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, regAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, mtype);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, finalType);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
     //% blockId=motionAngle
     //% block="move %mtype at speed %mspeed for %angle °"
     //% group="Motion" weight=7
-    //% mspeed.min=0 mspeed.max=100 mspeed.defl=50
+    //% mspeed.min=-100 mspeed.max=100 mspeed.defl=50
     //% angle.min=0 angle.max=1000 angle.defl=90
     export function motionAngle(mtype: motionType2, mspeed: number, angle: number): void {
-        if (mspeed > 100) mspeed = 100;
-        if (mspeed < 0) mspeed = 0;
         if (angle < 0) angle = 0;
+        if (angle > 1000) angle = 1000;
+
+        if (mspeed > 100) mspeed = 100;
+        if (mspeed < -100) mspeed = -100;
+        // 根据速度正负决定是否反转方向
+        let finalType = mtype;
+        if (mspeed < 0) {
+            switch (mtype) {
+                case motionType2.type1:
+                    finalType = motionType2.type2;
+                    break;
+                case motionType2.type2:
+                    finalType = motionType2.type1;
+                    break;
+            }
+        }
 
         const spAddr = 0x8C + 0x01;//设置速度
+        mspeed = Math.abs(mspeed);//绝对值
         let spBuff = pins.createBuffer(5);
         spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
         spBuff.setNumber(NumberFormat.UInt8BE, 1, (mspeed >> 8) & 0xFF);
@@ -180,7 +231,7 @@ namespace FIFAbit {
         const regAddr = 0x8C + 0x00;//执行
         let cmdBuff = pins.createBuffer(2);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, regAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, mtype);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, finalType);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
     //% blockId=motionStop
@@ -237,40 +288,75 @@ namespace FIFAbit {
         let angle = readBuff.getNumber(NumberFormat.Int32BE, 0);
         return angle;
     }
-    //% blockId=motorSetSpeed
-    //% block="set motor %mID speed to %speed"
-    //% group="Motor" weight=8
-    //% speed.min=0 speed.max=100 speed.defl=50
-    export function motorSetSpeed(mID: motorID, speed: number): void {
-        if (speed > 100) speed = 100;
-        if (speed < 0) speed = 0;
+    // //% blockId=motorSetSpeed
+    // //% block="set motor %mID speed to %speed"
+    // //% group="Motor" weight=8
+    // //% speed.min=-100 speed.max=100 speed.defl=50
+    // export function motorSetSpeed(mID: motorID, speed: number): void {
+    //     if (speed > 100) speed = 100;
+    //     if (speed < 0) speed = 0;
 
+    //     // 设置速度
+    //     const spAddr = mID + 0x04;
+    //     let spBuff = pins.createBuffer(3);
+    //     spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
+    //     spBuff.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF);
+    //     spBuff.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF);
+    //     pins.i2cWriteBuffer(i2cAddress, spBuff);
+    // }
+    //% blockId=motorRun
+    //% block="run motor %mID at speed %mspeed"
+    //% mspeed.min=-100 mspeed.max=100 mspeed.defl=50
+    //% group="Motor" weight=7
+    export function motorRun(mID: motorID, mspeed: number): void {
+        if (mspeed > 100) mspeed = 100;
+        if (mspeed < -100) mspeed = -100;
+        // 根据速度正负决定是否反转方向
+        let finalType = 1;
+        if (mspeed < 0) {
+            finalType = 2;
+        }
         // 设置速度
         const spAddr = mID + 0x04;
+        mspeed = Math.abs(mspeed);//绝对值
         let spBuff = pins.createBuffer(3);
         spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
-        spBuff.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF);
-        spBuff.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF);
+        spBuff.setNumber(NumberFormat.UInt8BE, 1, (mspeed >> 8) & 0xFF);
+        spBuff.setNumber(NumberFormat.UInt8BE, 2, mspeed & 0xFF);
         pins.i2cWriteBuffer(i2cAddress, spBuff);
-    }
-    //% blockId=motorRun
-    //% block="run motor %mID %direction"
-    //% group="Motor" weight=7
-    export function motorRun(mID: motorID, direction: motorDirection): void {
+
         // 发送运动指令
         const cmdAddr = mID + 0x03;
         let cmdBuff = pins.createBuffer(2);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, finalType);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
     //% blockId=motorRunDistance
-    //% block="run motor %mID  %direction for %distance cm"
+    //% block="run motor %mID at speed %mspeed for %distance cm"
     //% group="Motor" weight=6
     //% distance.min=0 distance.max=1000 distance.defl=10
+    //% mspeed.min=-100 mspeed.max=100 mspeed.defl=50
     //% inlineInputMode = inline
-    export function motorRunDistance(mID: motorID, direction: motorDirection, distance: number): void {
+    export function motorRunDistance(mID: motorID, mspeed: number, distance: number): void {
         if (distance < 0) distance = 0;
+        if (distance > 1000) distance = 1000;
+    
+        if (mspeed > 100) mspeed = 100;
+        if (mspeed < -100) mspeed = -100;
+        // 根据速度正负决定是否反转方向
+        let finalType = 1;
+        if (mspeed < 0) {
+            finalType = 2;
+        }
+        // 设置速度
+        const spAddr = mID + 0x04;
+        mspeed = Math.abs(mspeed);//绝对值
+        let spBuff = pins.createBuffer(3);
+        spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
+        spBuff.setNumber(NumberFormat.UInt8BE, 1, (mspeed >> 8) & 0xFF);
+        spBuff.setNumber(NumberFormat.UInt8BE, 2, mspeed & 0xFF);
+        pins.i2cWriteBuffer(i2cAddress, spBuff);
 
         //设置距离
         const disAddr = mID + 0x07;
@@ -283,17 +369,35 @@ namespace FIFAbit {
         const cmdAddr = mID + 0x03;
         let cmdBuff = pins.createBuffer(2);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction + 6);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, finalType + 6);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
 
     //% blockId=motorRunAngle
-    //% block="run motor %mID  %direction %angle °"
+    //% block="run motor %mID at speed %mspeed %angle °"
     //% group="Motor" weight=5
     //% angle.min=0 angle.max=3600 angle.defl=90
+    //% mspeed.min=-100 mspeed.max=100 mspeed.defl=50
     //% inlineInputMode = inline
-    export function motorRunAngle(mID: motorID, direction: motorDirection, angle: number): void {
+    export function motorRunAngle(mID: motorID, mspeed: number, angle: number): void {
         if (angle < 0) angle = 0;
+        if (angle > 3600) angle = 3600;
+
+        if (mspeed > 100) mspeed = 100;
+        if (mspeed < -100) mspeed = -100;
+        // 根据速度正负决定是否反转方向
+        let finalType = 1;
+        if (mspeed < 0) {
+            finalType = 2;
+        }
+        // 设置速度
+        const spAddr = mID + 0x04;
+        mspeed = Math.abs(mspeed);//绝对值
+        let spBuff = pins.createBuffer(3);
+        spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
+        spBuff.setNumber(NumberFormat.UInt8BE, 1, (mspeed >> 8) & 0xFF);
+        spBuff.setNumber(NumberFormat.UInt8BE, 2, mspeed & 0xFF);
+        pins.i2cWriteBuffer(i2cAddress, spBuff);
 
         //设置偏移角度
         const disAddr = mID + 0x06;
@@ -306,32 +410,32 @@ namespace FIFAbit {
         const cmdAddr = mID + 0x03;
         let cmdBuff = pins.createBuffer(2);
         cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction + 4);
+        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, finalType + 4);
         pins.i2cWriteBuffer(i2cAddress, cmdBuff);
     }
 
-    //% blockId=motorRunSpeed
-    //% block="run motor %mID go %direction at speed %speed"
-    //% group="Motor" weight=4
-    //% speed.min=0 speed.max=100 speed.defl=50
-    export function motorRunSpeed(mID: motorID, direction: motorDirection, speed: number): void {
-        if (speed > 100) speed = 100;
-        if (speed < 0) speed = 0;
+    // //% blockId=motorRunSpeed
+    // //% block="run motor %mID go %direction at speed %speed"
+    // //% group="Motor" weight=4
+    // //% speed.min=0 speed.max=100 speed.defl=50
+    // export function motorRunSpeed(mID: motorID, direction: motorDirection, speed: number): void {
+    //     if (speed > 100) speed = 100;
+    //     if (speed < 0) speed = 0;
 
-        // 设置速度
-        const spAddr = mID + 0x04;
-        let spBuff = pins.createBuffer(3);
-        spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
-        spBuff.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF);
-        spBuff.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF);
-        pins.i2cWriteBuffer(i2cAddress, spBuff);
-        // 发送运动指令
-        const cmdAddr = mID + 0x03;
-        let cmdBuff = pins.createBuffer(2);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
-        cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction);
-        pins.i2cWriteBuffer(i2cAddress, cmdBuff);
-    }
+    //     // 设置速度
+    //     const spAddr = mID + 0x04;
+    //     let spBuff = pins.createBuffer(3);
+    //     spBuff.setNumber(NumberFormat.UInt8BE, 0, spAddr);
+    //     spBuff.setNumber(NumberFormat.UInt8BE, 1, (speed >> 8) & 0xFF);
+    //     spBuff.setNumber(NumberFormat.UInt8BE, 2, speed & 0xFF);
+    //     pins.i2cWriteBuffer(i2cAddress, spBuff);
+    //     // 发送运动指令
+    //     const cmdAddr = mID + 0x03;
+    //     let cmdBuff = pins.createBuffer(2);
+    //     cmdBuff.setNumber(NumberFormat.UInt8BE, 0, cmdAddr);
+    //     cmdBuff.setNumber(NumberFormat.UInt8BE, 1, direction);
+    //     pins.i2cWriteBuffer(i2cAddress, cmdBuff);
+    // }
     //% blockId=motorStop
     //% block="stop motor %mID"
     //% group="Motor" weight=3
