@@ -21,7 +21,7 @@ enum LineSensorPin {
 enum SensorSide {
     //% block="left"
     Left = 1,
-    //% block="middle"
+    //% block="center"
     Middle = 2,
     //% block="right"
     Right = 3
@@ -42,7 +42,7 @@ namespace FIFAbit {
     }
 
     //% blockId=linetracking_init
-    //% block="init line sensors|left %left|middle %middle|right %right"
+    //% block="init line sensors|left %left|center %middle|right %right"
     //% inlineInputMode=external
     //% left.defl=LineSensorPin.P0
     //% middle.defl=LineSensorPin.P1
