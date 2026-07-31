@@ -115,7 +115,7 @@ namespace FIFAbit {
     //% group="Joystick" weight=47
     export function isJoystickPressed(): boolean {
         if (!joystick_inited) return false
-        serial.writeLine("" + pins.digitalReadPin(joySW))
+        //serial.writeLine("" + pins.digitalReadPin(joySW))
 
         return pins.digitalReadPin(joySW) == 0
     }
